@@ -31,6 +31,11 @@ uvicorn main:app --reload # run the server
 
 To use the API key, you must run `export=API_KEY # replace the actual API key with API_KEY` and make sure that a `.env` file exists in the `backend` folder so that the backend code will be able to access the environment variable from the operating system
 
+## Considerations
+
+- Create a better folder structure
+- Put repeated work of sending request and encoding json in middleware
+
 ## Technologies used
 
 - Vue.js for frontend
