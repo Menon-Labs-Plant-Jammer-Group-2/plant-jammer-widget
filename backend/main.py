@@ -1,10 +1,10 @@
 from typing import Optional
 import requests
 import json
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 import os
 from string import Template
-
+import time
 
 app = FastAPI()
 url = 'https://api.plantjammer.com/graphql'
@@ -34,12 +34,9 @@ def get_recipes(keyword: str):
                 }
             }
         }""")
-    print(query_template)
     query = {
         'query': query_template.substitute(keyword=keyword)}
-    print(query)
     r = requests.post(url, json=query, headers=headers)
-    print(r.text)
     data = json.loads(r.text)
     return data
 
