@@ -1,15 +1,20 @@
 from typing import Optional
-import requests
 import json
 from fastapi import FastAPI, HTTPException, Request
 import os
 from string import Template
 import time
+import urllib3
+
 
 app = FastAPI()
 url = 'https://api.plantjammer.com/graphql'
+http = urllib3.PoolManager()
 headers = {
     "Authorization": os.environ.get("API_KEY")}
+
+# Always use pagination if you don't need everything, for performance gains
+# See faster-requests pull request for more info on how good pagination is
 
 
 @app.get("/")
@@ -22,10 +27,12 @@ def get_recipes(keyword: str):
     '''
     For getting the recipes based on a keyword
     '''
+    start_time = time.time()
+
     # we also have serving, estimated time, and suggested ingredients
     query_template = Template(
         """query dishes {
-            dishes(search:{keywords:"$keyword"}) {
+            dishes(search:{keywords:"$keyword"}, pagination:{limitTo:5}) {
                 name
                 recipeNote
                 description
@@ -36,8 +43,8 @@ def get_recipes(keyword: str):
         }""")
     query = {
         'query': query_template.substitute(keyword=keyword)}
-    r = requests.post(url, json=query, headers=headers)
-    data = json.loads(r.text)
+    r = http.request('POST', url, fields=query, headers=headers)
+    data = json.loads(r.data.decode('utf-8'))
     return data
 
 
@@ -58,6 +65,6 @@ def get_ingredients(ingredient: str):
         }""")
     query = {
         'query': query_template.substitute(ingredient=ingredient)}
-    r = requests.post(url, json=query, headers=headers)
-    data = json.loads(r.text)
+    r = http.request('POST', url, fields=query, headers=headers)
+    data = json.loads(r.data.decode('utf-8'))
     return data
