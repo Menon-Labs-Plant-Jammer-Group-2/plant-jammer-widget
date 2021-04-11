@@ -2,7 +2,7 @@
 
 - This is our repository that we will use to build the widget, the `backend` and `frontend` is in their respective folders
 - Never push to `main` branch! Whenever you start working on a ticket, create a new branch and then push it to the branch you just created
-- For help Stack Overflow, Github and [FastAPI discord](!https://discord.gg/VQjSZaeJmf) and [Vue.js discord](!https://discord.com/invite/HBherRA) are excellent
+- For help Stack Overflow, Github and [FastAPI discord](https://discord.gg/VQjSZaeJmf) and [Vue.js discord](https://discord.com/invite/HBherRA) are excellent
 - Remember to store any confidential information like the API key in `.env` file, we don't want this to be released to the public
 
 ## Getting started
