@@ -5,6 +5,7 @@ import os
 from string import Template
 import time
 import urllib3
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
@@ -12,6 +13,21 @@ url = 'https://api.plantjammer.com/graphql'
 http = urllib3.PoolManager()
 headers = {
     "Authorization": os.environ.get("API_KEY")}
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Always use pagination if you don't need everything, for performance gains
 # See faster-requests pull request for more info on how good pagination is
@@ -45,6 +61,9 @@ def get_dishes(keyword: str):
                 recipeNote
                 description
                 estimatedPreparationTime
+                image{
+                    url
+                }
                 suggestedIngredients{
                     name
                     substitutes{
