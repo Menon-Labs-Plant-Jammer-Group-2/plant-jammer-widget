@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="wrapper">
-      <button class="column button is-large empty">
+      <button class="column button is-large empty" @click="changeState()">
         <b class="fridge">Empty your fridge</b>
         <br />
         <small class="desc">Find recipes you can make with ingredients you have at home</small>
@@ -16,7 +16,15 @@
 <script>
 export default {
   name: "Home",
-  components: {}
+  props: {
+    state: Number
+  },
+  components: {},
+  methods: {
+    changeState: function() {
+      return this.$emit("update:state", 1);
+    }
+  }
 };
 </script>
 

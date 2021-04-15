@@ -17,6 +17,9 @@ import axios from "axios";
 export default {
   name: "Gallery",
   components: {},
+  props: {
+    state: Number
+  },
   data() {
     return {
       cuisines: ["Italian", "Indian", "Vegan"],
