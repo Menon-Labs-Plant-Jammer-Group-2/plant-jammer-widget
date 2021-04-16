@@ -141,6 +141,10 @@ def get_recipe(keywords: List[str]):
     dishes(search:{keywords:"$keywords"},djangoFilter:{orderBy:"search_score"}){
     searchScore
       name
+      estimatedPreparationTime
+      image{
+          url
+      }
       serving {
         name
         amount

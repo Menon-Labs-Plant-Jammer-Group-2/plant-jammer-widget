@@ -3,7 +3,7 @@
     <div class="header">
       <div class="title">Empty Your Fridge</div>
       <!-- make this responsive -->
-      <button class="button is-white back" @click="$emit('update:state',1)">&lt; Back to home</button>
+      <button class="button is-white back" @click="$emit('update:state',0)">&lt; Back to home</button>
     </div>
     <div class="steps-wrapper">
       <ul class="steps has-content-above has-content-centered">
@@ -19,16 +19,22 @@
         </li>
       </ul>
     </div>
-    <step1 v-if="step===0" />
+    <step1 :chosen="chosen" :step.sync="step" v-if="step===0" />
+    <step2 :chosen="chosen" :step.sync="step" v-if="step===1" />
+    <step3 :chosen="chosen" :step.sync="step" v-if="step===2" />
   </div>
 </template>
 
 <script>
 import Step1 from "./Step1.vue";
+import Step2 from "./Step2.vue";
+import Step3 from "./Step3";
 export default {
   name: "EmptyFridge",
   components: {
-    Step1
+    Step1,
+    Step2,
+    Step3
   },
   props: {
     state: Number
@@ -36,6 +42,7 @@ export default {
   data() {
     return {
       step: 0,
+      chosen: [],
       steps: ["Common ingredients", "Choose dish", "Finalize"]
     };
   }

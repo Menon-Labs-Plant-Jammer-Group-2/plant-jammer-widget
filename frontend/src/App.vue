@@ -9,10 +9,10 @@
 
       <div class="footer-app">
         <button class="button bottom" @click="state=0">
-          <i class="fas fa-home" />
+          <i class="fas app-icon fa-home" />
         </button>
         <button class="button bottom">
-          <i class="fas fa-shopping-cart" />
+          <i class="fas app-icon fa-shopping-cart" />
         </button>
       </div>
     </div>
@@ -75,7 +75,7 @@ export default {
   width: 50%;
   height: 90%;
 }
-.fas {
+.app-icon {
   font-size: 2rem;
 }
 </style>

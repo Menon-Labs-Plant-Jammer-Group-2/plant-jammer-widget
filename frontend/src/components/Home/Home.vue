@@ -21,6 +21,7 @@ export default {
   },
   components: {},
   methods: {
+    // moves from home page to empty our fridge page
     changeState: function() {
       return this.$emit("update:state", 1);
     }

@@ -28,6 +28,8 @@ export default {
     };
   },
   async mounted() {
+    // making sure that images are being rendered in the home screen from the server
+    // it's very slow rn
     for (let name of this.cuisines) {
       let self = this;
       console.log(this.images);

@@ -22,8 +22,17 @@
         <button class="result button is-white" @click="addIngredients(ingredient)">{{ingredient}}</button>
       </div>
     </div>
-    <div>
-      <li v-for="chose in chosen" :key="chose">{{chose}}</li>
+    <p v-if="chosen.length>=1" class="title is-4">The ingredients you've selected</p>
+    <div class="holder">
+      <p class="item" v-for="chose in chosen" :key="chose">{{chose}}</p>
+    </div>
+    <div v-if="chosen.length >= 1" class="next-wrapper">
+      <button @click="$emit('update:step',1)" class="next button is-success">
+        <span class="icon is-small">
+          <i class="fas fa-arrow-right"></i>
+        </span>
+        <span>Next</span>
+      </button>
     </div>
   </div>
 </template>
@@ -33,13 +42,16 @@ import axios from "axios";
 export default {
   name: "Step1",
   components: {},
+  props: {
+    step: Number,
+    chosen: Array
+  },
   data() {
     return {
       searchQuery: "",
       searchData: [],
       inputFocus: false,
-      searchFocus: false,
-      chosen: []
+      searchFocus: false
     };
   },
   methods: {
@@ -50,6 +62,8 @@ export default {
     }
   },
   async mounted() {
+    // for populating our search data so that we can search and get the list of available options
+    // while typing
     let self = this;
     axios
       .get(`http://127.0.0.1:8000/ingredients/`)
@@ -65,6 +79,8 @@ export default {
       });
   },
   computed: {
+    // just pattern matches with whatever the user is typing in the input box, filters results
+    // for relevant matches
     filteredIngredients: function() {
       var self = this;
       let filteredData = this.searchData.filter(function(ingredient) {
@@ -99,5 +115,14 @@ export default {
   justify-content: left;
   width: 80%;
   border: none;
+}
+.item {
+  text-align: center;
+}
+.next-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 2rem;
 }
 </style>
