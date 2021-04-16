@@ -79,8 +79,8 @@ def get_dishes(keyword: str):
     return data
 
 
-@app.get("/ingredients/{ingredient}")
-def get_ingredients_route(ingredient: str):
+@app.get("/ingredients/")
+def get_ingredients_route(ingredient: Optional[str] = ""):
     '''
      For getting available ingredients and the substitutes, could be possible
      if users want to create their own recipe
