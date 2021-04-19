@@ -1,7 +1,5 @@
 # To do
 
-- When user clicks on deleted, it's deleted from chosen and is reflected in the dishes
-
 - Complete filter
 - Complete finalize section
 

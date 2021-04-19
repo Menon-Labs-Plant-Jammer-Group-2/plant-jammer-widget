@@ -9,7 +9,6 @@
           </span>
         </p>
       </div>
-      <h1>We found {{searchData.length}} recipes</h1>
 
       <div class="metadata">
         <button
@@ -21,19 +20,26 @@
           class="fridge-button button is-white"
         >Your fridge</button>
       </div>
+      <div>
+        <h1>We found {{searchData.length}} recipes</h1>
 
-      <div class="scrollbar">
-        <div class="dish-results" v-for="dish in filteredDishes" :key="dish['properties']['name']">
-          <div class="card">
-            <div class="card-image">
-              <img :src="dish['properties']['image']" alt="Placeholder image" />
-              <div class="name">
-                <p class="title is-4">{{dish["properties"]["name"]}}</p>
+        <div class="scrollbar">
+          <div
+            class="dish-results"
+            v-for="dish in (timeClicked ?  filteredDishesTime : filteredDishes)"
+            :key="dish['properties']['name']"
+          >
+            <div class="card">
+              <div class="card-image">
+                <img :src="dish['properties']['image']" alt="Placeholder image" />
+                <div class="name">
+                  <p class="title is-4">{{dish["properties"]["name"]}}</p>
+                </div>
               </div>
-            </div>
-            <div class="content">
-              Time
-              <div class="time">{{dish['properties']["time"]}} minutes</div>
+              <div class="content">
+                Time
+                <div class="time">{{dish['properties']["time"]}} minutes</div>
+              </div>
             </div>
           </div>
         </div>
@@ -77,7 +83,9 @@ export default {
     chosen: Array,
     fridgeClicked: Boolean,
     searchData: Array,
-    filterClicked: Boolean
+    filterClicked: Boolean,
+    timeClicked: Boolean,
+    filteredTimes: Array
   },
   data() {
     return {
@@ -112,6 +120,7 @@ export default {
           self.searchData.push(properties);
           self.$emit("update:searchData", self.searchData);
         }
+        console.log(self.searchData);
         self.finished = true;
       })
       .catch(function(error) {
@@ -123,9 +132,18 @@ export default {
       var self = this;
       let filteredData = this.searchData.filter(function(dish) {
         let temp = JSON.parse(JSON.stringify(dish));
-        console.log(temp);
         temp = temp["properties"]["name"];
         console.log(temp);
+        return temp.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0;
+      });
+      console.log(filteredData);
+      return filteredData;
+    },
+    filteredDishesTime: function() {
+      var self = this;
+      let filteredData = this.filteredTimes.filter(function(dish) {
+        let temp = JSON.parse(JSON.stringify(dish));
+        temp = temp["properties"]["name"];
         return temp.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0;
       });
       return filteredData;

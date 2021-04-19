@@ -38,7 +38,9 @@ export default {
   props: {
     chosen: Array,
     filterClicked: Boolean,
-    searchData: Array
+    searchData: Array,
+    filteredTimes: Array,
+    timeClicked: Boolean
   },
   data() {
     return {
@@ -49,8 +51,7 @@ export default {
         "Dishes",
         "Occasions"
       ],
-      time: 0,
-      dragged: false
+      time: 0
     };
   },
   methods: {
@@ -58,7 +59,9 @@ export default {
       let newTimes = this.searchData.filter(
         recipe => recipe["properties"]["time"] <= time
       );
-      this.$emit("update:searchData", newTimes);
+      // this.$emit("update:searchData", newTimes);
+      this.$emit("update:timeClicked", true);
+      this.$emit("update:filteredTimes", newTimes);
     }
   }
 };

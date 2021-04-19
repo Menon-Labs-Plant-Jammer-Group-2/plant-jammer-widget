@@ -12,6 +12,8 @@
       :filterClicked.sync="filterClicked"
       :chosen.sync="chosen"
       :searchData.sync="searchData"
+      :timeClicked.sync="timeClicked"
+      :filteredTimes.sync="filteredTimes"
     />
     <div class="header">
       <div class="title">Empty Your Fridge</div>
@@ -39,6 +41,8 @@
       :chosen.sync="chosen"
       :step.sync="step"
       :searchData.sync="searchData"
+      :filteredTimes.sync="filteredTimes"
+      :timeClicked.sync="timeClicked"
       v-if="step===1"
     />
     <step3 :chosen="chosen" :step.sync="step" v-if="step===2" />
@@ -70,7 +74,9 @@ export default {
       steps: ["Common ingredients", "Choose dish", "Finalize"],
       fridgeClicked: false,
       filterClicked: false,
-      searchData: []
+      searchData: [],
+      filteredTimes: [],
+      timeClicked: false
     };
   }
 };
