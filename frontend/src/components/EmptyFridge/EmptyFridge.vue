@@ -6,6 +6,13 @@
       :chosen.sync="chosen"
       :searchData.sync="searchData"
     />
+
+    <filter-recipe
+      v-if="filterClicked"
+      :filterClicked.sync="filterClicked"
+      :chosen.sync="chosen"
+      :searchData.sync="searchData"
+    />
     <div class="header">
       <div class="title">Empty Your Fridge</div>
       <!-- make this responsive -->
@@ -28,6 +35,7 @@
     <step1 :chosen="chosen" :step.sync="step" v-if="step===0" />
     <step2
       :fridgeClicked.sync="fridgeClicked"
+      :filterClicked.sync="filterClicked"
       :chosen.sync="chosen"
       :step.sync="step"
       :searchData.sync="searchData"
@@ -42,13 +50,15 @@ import Step1 from "./Step1.vue";
 import Step2 from "./Step2.vue";
 import Step3 from "./Step3";
 import Fridge from "./Fridge.vue";
+import FilterRecipe from "../Filter.vue";
 export default {
   name: "EmptyFridge",
   components: {
     Step1,
     Step2,
     Step3,
-    Fridge
+    Fridge,
+    FilterRecipe
   },
   props: {
     state: Number

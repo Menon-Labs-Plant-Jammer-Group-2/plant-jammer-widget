@@ -12,7 +12,10 @@
       <h1>We found {{searchData.length}} recipes</h1>
 
       <div class="metadata">
-        <button @click="filterBox = true" class="filter-button button is-white">Filter</button>
+        <button
+          @click="$emit('update:filterClicked',true)"
+          class="filter-button button is-white"
+        >Filter</button>
         <button
           @click="$emit('update:fridgeClicked',true)"
           class="fridge-button button is-white"
@@ -73,7 +76,8 @@ export default {
     step: Number,
     chosen: Array,
     fridgeClicked: Boolean,
-    searchData: Array
+    searchData: Array,
+    filterClicked: Boolean
   },
   data() {
     return {
