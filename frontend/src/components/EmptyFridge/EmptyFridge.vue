@@ -1,5 +1,11 @@
 <template>
   <div>
+    <fridge
+      v-if="fridgeClicked"
+      :fridgeClicked.sync="fridgeClicked"
+      :chosen.sync="chosen"
+      :searchData.sync="searchData"
+    />
     <div class="header">
       <div class="title">Empty Your Fridge</div>
       <!-- make this responsive -->
@@ -20,7 +26,13 @@
       </ul>
     </div>
     <step1 :chosen="chosen" :step.sync="step" v-if="step===0" />
-    <step2 :chosen="chosen" :step.sync="step" v-if="step===1" />
+    <step2
+      :fridgeClicked.sync="fridgeClicked"
+      :chosen.sync="chosen"
+      :step.sync="step"
+      :searchData.sync="searchData"
+      v-if="step===1"
+    />
     <step3 :chosen="chosen" :step.sync="step" v-if="step===2" />
   </div>
 </template>
@@ -29,12 +41,14 @@
 import Step1 from "./Step1.vue";
 import Step2 from "./Step2.vue";
 import Step3 from "./Step3";
+import Fridge from "./Fridge.vue";
 export default {
   name: "EmptyFridge",
   components: {
     Step1,
     Step2,
-    Step3
+    Step3,
+    Fridge
   },
   props: {
     state: Number
@@ -43,7 +57,10 @@ export default {
     return {
       step: 0,
       chosen: [],
-      steps: ["Common ingredients", "Choose dish", "Finalize"]
+      steps: ["Common ingredients", "Choose dish", "Finalize"],
+      fridgeClicked: false,
+      filterClicked: false,
+      searchData: []
     };
   }
 };

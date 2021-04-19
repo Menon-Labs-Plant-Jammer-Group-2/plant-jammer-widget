@@ -2,12 +2,23 @@
   <div>
     <div v-if="searchData.length!=0">
       <div class="search-dishes">
-        <input class="input is-rounded" v-model="searchQuery" type="text" placeholder="Search" />
+        <p class="control has-icons-right">
+          <input class="input is-rounded" type="text" v-model="searchQuery" placeholder="Search" />
+          <span class="icon is-small is-right">
+            <i class="fas fa-search"></i>
+          </span>
+        </p>
       </div>
+      <h1>We found {{searchData.length}} recipes</h1>
+
       <div class="metadata">
-        <button class="filter-button button is-white">Filter</button>
-        <button class="fridge-button button is-white">Your fridge</button>
+        <button @click="filterBox = true" class="filter-button button is-white">Filter</button>
+        <button
+          @click="$emit('update:fridgeClicked',true)"
+          class="fridge-button button is-white"
+        >Your fridge</button>
       </div>
+
       <div class="scrollbar">
         <div class="dish-results" v-for="dish in filteredDishes" :key="dish['properties']['name']">
           <div class="card">
@@ -25,9 +36,13 @@
         </div>
       </div>
     </div>
-    <div v-else-if="searchData.length==0">
+    <div v-else-if="finished===false">
+      <h1 class="title">Hang on! We're fetching some recipes :)</h1>
+    </div>
+    <div v-else-if="searchData.length===0">
       <h1 class="title">We weren't able to find any dishes with your ingredients :(</h1>
     </div>
+
     <div class="direction-wrapper">
       <div class="back-wrapper">
         <button @click="$emit('update:step',0)" class="next button is-success">
@@ -37,7 +52,7 @@
           <span>Back</span>
         </button>
       </div>
-      <div class="next-wrapper">
+      <div v-if="searchData.length!==0" class="next-wrapper">
         <button @click="$emit('update:step',2)" class="next button is-success">
           <span class="icon is-small">
             <i class="fas fa-arrow-right"></i>
@@ -56,12 +71,14 @@ export default {
   components: {},
   props: {
     step: Number,
-    chosen: Array
+    chosen: Array,
+    fridgeClicked: Boolean,
+    searchData: Array
   },
   data() {
     return {
-      searchData: [],
-      searchQuery: ""
+      searchQuery: "",
+      finished: false
     };
   },
   async mounted() {
@@ -89,9 +106,9 @@ export default {
             }
           };
           self.searchData.push(properties);
+          self.$emit("update:searchData", self.searchData);
         }
-        let found = JSON.parse(JSON.stringify(self.searchData));
-        self.results = found.length >= 1 ? true : false;
+        self.finished = true;
       })
       .catch(function(error) {
         console.log(error);
@@ -107,7 +124,7 @@ export default {
         console.log(temp);
         return temp.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0;
       });
-      return filteredData.slice(0, 6);
+      return filteredData;
     }
   }
 };
@@ -118,10 +135,41 @@ export default {
   margin: 0 auto;
   width: 80%;
 }
+input {
+  color: #2d5d4c;
+  border: 1px solid #e2f7cb;
+}
+::placeholder {
+  color: #2d5d4c;
+}
 .metadata {
   margin: 1rem 2rem 0 2rem;
   display: flex;
   justify-content: space-between;
+}
+.direction-wrapper {
+  margin: 1rem 2rem 0 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+.fa-search {
+  color: #459071;
+}
+.scrollbar {
+  max-height: 30rem;
+  overflow-y: scroll;
+}
+.card-image {
+  height: auto;
+  width: auto;
+}
+.name {
+  position: absolute;
+  margin-left: 0.5rem;
+  bottom: 0.8rem;
+}
+.content {
+  margin-left: 1rem;
 }
 .dish-results {
   padding: 0;
@@ -129,25 +177,9 @@ export default {
   width: 50%;
   margin: 2rem auto;
 }
-.scrollbar {
-  max-height: 30rem;
-  overflow-y: scroll;
-}
-.direction-wrapper {
-  margin: 1rem 2rem 0 2rem;
-  display: flex;
-  justify-content: space-between;
-}
-.content {
-  margin-left: 1rem;
-}
-.name {
-  position: absolute;
-  margin-left: 0.5rem;
-  bottom: 0.8rem;
-}
-.card-image {
-  height: auto;
-  width: auto;
+.filter-box {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 </style>

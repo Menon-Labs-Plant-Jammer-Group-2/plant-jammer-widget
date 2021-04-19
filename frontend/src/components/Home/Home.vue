@@ -8,7 +8,12 @@
       </button>
     </div>
     <div class="wrapper-input">
-      <input class="is-rounded input" type="text" placeholder="search ..." />
+      <p class="control has-icons-right">
+        <input class="input is-rounded" type="text" placeholder="Search" />
+        <span class="icon is-small is-right">
+          <i class="fas fa-search"></i>
+        </span>
+      </p>
     </div>
   </div>
 </template>
@@ -51,9 +56,19 @@ export default {
   font-size: 1rem;
   overflow-wrap: break-word;
 }
-.input {
+input {
+  color: #49a24f;
+  border: 1px solid #99d19d;
+}
+::placeholder {
+  color: #49a24f;
+}
+.wrapper-input {
   width: 35%;
   margin-top: 2%;
   margin-left: 60%;
+}
+.fa-search {
+  color: #459071;
 }
 </style>

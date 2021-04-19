@@ -44,6 +44,7 @@ export default {
   width: 50%;
   margin: 0 auto;
   padding: 0;
+  position: relative;
 }
 .title {
   padding-top: 2rem;
