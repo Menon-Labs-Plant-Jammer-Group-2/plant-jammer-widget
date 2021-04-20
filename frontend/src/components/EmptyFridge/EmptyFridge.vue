@@ -43,9 +43,10 @@
       :searchData.sync="searchData"
       :filteredTimes.sync="filteredTimes"
       :timeClicked.sync="timeClicked"
+      :selectedDish.sync="selectedDish"
       v-if="step===1"
     />
-    <step3 :chosen="chosen" :step.sync="step" v-if="step===2" />
+    <step3 :selectedDish.sync="selectedDish" :chosen="chosen" :step.sync="step" v-if="step===2" />
   </div>
 </template>
 
@@ -76,7 +77,9 @@ export default {
       filterClicked: false,
       searchData: [],
       filteredTimes: [],
-      timeClicked: false
+      timeClicked: false,
+      selectedDish: "",
+      suggestedNames: new Set()
     };
   }
 };

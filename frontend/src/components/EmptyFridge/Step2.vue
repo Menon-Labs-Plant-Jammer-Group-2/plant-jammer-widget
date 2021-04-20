@@ -22,14 +22,15 @@
       </div>
       <div>
         <h1>We found {{searchData.length}} recipes</h1>
-
+        <h1 v-if="selectedClicked">You've selected {{selectedDish}}</h1>
+        <h1>Click on a recipe to select it!</h1>
         <div class="scrollbar">
           <div
             class="dish-results"
             v-for="dish in (timeClicked ?  filteredDishesTime : filteredDishes)"
             :key="dish['properties']['name']"
           >
-            <div class="card">
+            <div @click="selected(dish)" class="card">
               <div class="card-image">
                 <img :src="dish['properties']['image']" alt="Placeholder image" />
                 <div class="name">
@@ -61,7 +62,7 @@
           <span>Back</span>
         </button>
       </div>
-      <div v-if="searchData.length!==0" class="next-wrapper">
+      <div v-if="selectedClicked" class="next-wrapper">
         <button @click="$emit('update:step',2)" class="next button is-success">
           <span class="icon is-small">
             <i class="fas fa-arrow-right"></i>
@@ -85,13 +86,29 @@ export default {
     searchData: Array,
     filterClicked: Boolean,
     timeClicked: Boolean,
-    filteredTimes: Array
+    filteredTimes: Array,
+    selectedDish: String,
+    suggestedNames: Set
   },
   data() {
     return {
       searchQuery: "",
-      finished: false
+      finished: false,
+      selectedClicked: false
     };
+  },
+  methods: {
+    selected: function(dish) {
+      this.$emit("update:selectedDish", dish["properties"]["name"]);
+      this.selectedClicked = true;
+    },
+    filterSearch: function(data) {
+      return data.filter(dish => {
+        let temp = JSON.parse(JSON.stringify(dish));
+        temp = temp["properties"]["name"];
+        return temp.toLowerCase().indexOf(this.searchQuery.toLowerCase()) >= 0;
+      });
+    }
   },
   async mounted() {
     /* Here we just get the generated recipes of the ingredients that we had 
@@ -108,6 +125,7 @@ export default {
     axios
       .get(url)
       .then(function(response) {
+        let tempObj = [];
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
           let properties = {
@@ -117,9 +135,15 @@ export default {
               image: dish["image"]["url"]
             }
           };
-          self.searchData.push(properties);
-          self.$emit("update:searchData", self.searchData);
+          if (!self.suggestedNames.has(dish["name"])) {
+            self.suggestedNames.add(dish["name"]);
+            tempObj.push(properties);
+          }
         }
+
+        console.log(self.searchData);
+        self.$emit("update:searchData", tempObj);
+
         console.log(self.searchData);
         self.finished = true;
       })
@@ -129,24 +153,10 @@ export default {
   },
   computed: {
     filteredDishes: function() {
-      var self = this;
-      let filteredData = this.searchData.filter(function(dish) {
-        let temp = JSON.parse(JSON.stringify(dish));
-        temp = temp["properties"]["name"];
-        console.log(temp);
-        return temp.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0;
-      });
-      console.log(filteredData);
-      return filteredData;
+      return this.filterSearch(this.searchData);
     },
     filteredDishesTime: function() {
-      var self = this;
-      let filteredData = this.filteredTimes.filter(function(dish) {
-        let temp = JSON.parse(JSON.stringify(dish));
-        temp = temp["properties"]["name"];
-        return temp.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0;
-      });
-      return filteredData;
+      return this.filterSearch(this.searchData);
     }
   }
 };

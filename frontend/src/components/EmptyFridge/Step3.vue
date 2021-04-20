@@ -19,8 +19,8 @@ export default {
   name: "Step3",
   components: {},
   props: {
-    step: Number,
-    chosen: Array
+    chosen: Array,
+    step: Number
   },
   data() {
     return {};

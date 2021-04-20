@@ -1,6 +1,5 @@
 # To do
 
-- Complete filter
 - Complete finalize section
 
 - Cache requests to get images
