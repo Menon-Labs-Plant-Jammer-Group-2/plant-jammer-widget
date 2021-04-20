@@ -3,15 +3,22 @@
     <p class="sub title is-4">Select at least 1 ingredient</p>
     <p class="sub title is-6">Select ingredients you'd like to cook with</p>
     <p class="sub title is-6">with to create a recipe</p>
-    <div class="input-wrapper">
-      <input
-        class="input is-rounded"
-        v-model="searchQuery"
-        type="text"
-        placeholder="Search for ingredients ..."
-        @focus="inputFocus = true"
-        @blur="inputFocus = false"
-      />
+    <div class="field">
+      <div class="input-wrapper">
+        <p class="control has-icons-right">
+          <input
+            class="input search is-rounded"
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search for ingredients ..."
+            @focus="inputFocus = true"
+            @blur="inputFocus = false"
+          />
+          <span class="icon is-small is-right">
+            <i class="fas fa-search"></i>
+          </span>
+        </p>
+      </div>
     </div>
     <div
       @mouseover="searchFocus = true"
@@ -96,12 +103,20 @@ export default {
 
 <style scoped>
 .input-wrapper {
+  width: 80%;
   margin-top: 2rem;
   text-align: center;
+  margin: 2rem auto 0 auto;
 }
-.input {
-  width: 80%;
-  margin: 0 auto;
+.fa-search {
+  color: #459071;
+}
+input {
+  color: #2d5d4c;
+  border: 1px solid #e2f7cb;
+}
+::placeholder {
+  color: #2d5d4c;
 }
 .sub {
   padding: 0;

@@ -1,5 +1,20 @@
 <template>
   <div>
+    <fridge
+      v-if="fridgeClicked"
+      :fridgeClicked.sync="fridgeClicked"
+      :chosen.sync="chosen"
+      :searchData.sync="searchData"
+    />
+
+    <filter-recipe
+      v-if="filterClicked"
+      :filterClicked.sync="filterClicked"
+      :chosen.sync="chosen"
+      :searchData.sync="searchData"
+      :timeClicked.sync="timeClicked"
+      :filteredTimes.sync="filteredTimes"
+    />
     <div class="header">
       <div class="title">Empty Your Fridge</div>
       <!-- make this responsive -->
@@ -20,8 +35,19 @@
       </ul>
     </div>
     <step1 :chosen="chosen" :step.sync="step" v-if="step===0" />
-    <step2 :chosen="chosen" :step.sync="step" v-if="step===1" />
-    <step3 :chosen="chosen" :step.sync="step" v-if="step===2" />
+    <step2
+      :fridgeClicked.sync="fridgeClicked"
+      :filterClicked.sync="filterClicked"
+      :chosen.sync="chosen"
+      :step.sync="step"
+      :searchData.sync="searchData"
+      :filteredTimes.sync="filteredTimes"
+      :timeClicked.sync="timeClicked"
+      :selectedDish.sync="selectedDish"
+      :suggestedNames.sync="suggestedNames"
+      v-if="step===1"
+    />
+    <step3 :selectedDish.sync="selectedDish" :chosen="chosen" :step.sync="step" v-if="step===2" />
   </div>
 </template>
 
@@ -29,12 +55,16 @@
 import Step1 from "./Step1.vue";
 import Step2 from "./Step2.vue";
 import Step3 from "./Step3";
+import Fridge from "./Fridge.vue";
+import FilterRecipe from "../Filter.vue";
 export default {
   name: "EmptyFridge",
   components: {
     Step1,
     Step2,
-    Step3
+    Step3,
+    Fridge,
+    FilterRecipe
   },
   props: {
     state: Number
@@ -43,7 +73,14 @@ export default {
     return {
       step: 0,
       chosen: [],
-      steps: ["Common ingredients", "Choose dish", "Finalize"]
+      steps: ["Select ingredients", "Choose dish", "Finalize"],
+      fridgeClicked: false,
+      filterClicked: false,
+      searchData: [],
+      filteredTimes: [],
+      timeClicked: false,
+      selectedDish: "",
+      suggestedNames: new Set()
     };
   }
 };

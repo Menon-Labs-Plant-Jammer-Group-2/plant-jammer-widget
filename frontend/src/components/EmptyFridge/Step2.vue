@@ -2,32 +2,57 @@
   <div>
     <div v-if="searchData.length!=0">
       <div class="search-dishes">
-        <input class="input is-rounded" v-model="searchQuery" type="text" placeholder="Search" />
+        <p class="control has-icons-right">
+          <input class="input is-rounded" type="text" v-model="searchQuery" placeholder="Search" />
+          <span class="icon is-small is-right">
+            <i class="fas fa-search"></i>
+          </span>
+        </p>
       </div>
+
       <div class="metadata">
-        <button class="filter-button button is-white">Filter</button>
-        <button class="fridge-button button is-white">Your fridge</button>
+        <button
+          @click="$emit('update:filterClicked',true)"
+          class="filter-button button is-white"
+        >Filter</button>
+        <button
+          @click="$emit('update:fridgeClicked',true)"
+          class="fridge-button button is-white"
+        >Your fridge</button>
       </div>
-      <div class="scrollbar">
-        <div class="dish-results" v-for="dish in filteredDishes" :key="dish['properties']['name']">
-          <div class="card">
-            <div class="card-image">
-              <img :src="dish['properties']['image']" alt="Placeholder image" />
-              <div class="name">
-                <p class="title is-4">{{dish["properties"]["name"]}}</p>
+      <div>
+        <h1>We found {{searchData.length}} recipes</h1>
+        <h1 v-if="selectedClicked">You've selected {{selectedDish}}</h1>
+        <h1>Click on a recipe to select it!</h1>
+        <div class="scrollbar">
+          <div
+            class="dish-results"
+            v-for="dish in (timeClicked ?  filteredDishesTime : filteredDishes)"
+            :key="dish['properties']['name']"
+          >
+            <div @click="selected(dish)" class="card">
+              <div class="card-image">
+                <img :src="dish['properties']['image']" alt="Placeholder image" />
+                <div class="name">
+                  <p class="title is-4">{{dish["properties"]["name"]}}</p>
+                </div>
               </div>
-            </div>
-            <div class="content">
-              Time
-              <div class="time">{{dish['properties']["time"]}} minutes</div>
+              <div class="content">
+                Time
+                <div class="time">{{dish['properties']["time"]}} minutes</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div v-else-if="searchData.length==0">
+    <div v-else-if="finished===false">
+      <h1 class="title">Hang on! We're fetching some recipes :)</h1>
+    </div>
+    <div v-else-if="searchData.length===0">
       <h1 class="title">We weren't able to find any dishes with your ingredients :(</h1>
     </div>
+
     <div class="direction-wrapper">
       <div class="back-wrapper">
         <button @click="$emit('update:step',0)" class="next button is-success">
@@ -37,7 +62,7 @@
           <span>Back</span>
         </button>
       </div>
-      <div class="next-wrapper">
+      <div v-if="selectedClicked" class="next-wrapper">
         <button @click="$emit('update:step',2)" class="next button is-success">
           <span class="icon is-small">
             <i class="fas fa-arrow-right"></i>
@@ -56,13 +81,34 @@ export default {
   components: {},
   props: {
     step: Number,
-    chosen: Array
+    chosen: Array,
+    fridgeClicked: Boolean,
+    searchData: Array,
+    filterClicked: Boolean,
+    timeClicked: Boolean,
+    filteredTimes: Array,
+    selectedDish: String,
+    suggestedNames: Set
   },
   data() {
     return {
-      searchData: [],
-      searchQuery: ""
+      searchQuery: "",
+      finished: false,
+      selectedClicked: false
     };
+  },
+  methods: {
+    selected: function(dish) {
+      this.$emit("update:selectedDish", dish["properties"]["name"]);
+      this.selectedClicked = true;
+    },
+    filterSearch: function(data) {
+      return data.filter(dish => {
+        let temp = JSON.parse(JSON.stringify(dish));
+        temp = temp["properties"]["name"];
+        return temp.toLowerCase().indexOf(this.searchQuery.toLowerCase()) >= 0;
+      });
+    }
   },
   async mounted() {
     /* Here we just get the generated recipes of the ingredients that we had 
@@ -79,6 +125,7 @@ export default {
     axios
       .get(url)
       .then(function(response) {
+        let tempObj = [];
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
           let properties = {
@@ -88,10 +135,14 @@ export default {
               image: dish["image"]["url"]
             }
           };
-          self.searchData.push(properties);
+          if (!self.suggestedNames.has(dish["name"])) {
+            tempObj.push(properties);
+            self.suggestedNames.add(dish["name"]);
+          }
         }
-        let found = JSON.parse(JSON.stringify(self.searchData));
-        self.results = found.length >= 1 ? true : false;
+        if (tempObj.length !== 0) self.$emit("update:searchData", tempObj);
+        console.log(self.searchData);
+        self.finished = true;
       })
       .catch(function(error) {
         console.log(error);
@@ -99,15 +150,10 @@ export default {
   },
   computed: {
     filteredDishes: function() {
-      var self = this;
-      let filteredData = this.searchData.filter(function(dish) {
-        let temp = JSON.parse(JSON.stringify(dish));
-        console.log(temp);
-        temp = temp["properties"]["name"];
-        console.log(temp);
-        return temp.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0;
-      });
-      return filteredData.slice(0, 6);
+      return this.filterSearch(this.searchData);
+    },
+    filteredDishesTime: function() {
+      return this.filterSearch(this.searchData);
     }
   }
 };
@@ -118,10 +164,41 @@ export default {
   margin: 0 auto;
   width: 80%;
 }
+input {
+  color: #2d5d4c;
+  border: 1px solid #e2f7cb;
+}
+::placeholder {
+  color: #2d5d4c;
+}
 .metadata {
   margin: 1rem 2rem 0 2rem;
   display: flex;
   justify-content: space-between;
+}
+.direction-wrapper {
+  margin: 1rem 2rem 0 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+.fa-search {
+  color: #459071;
+}
+.scrollbar {
+  max-height: 30rem;
+  overflow-y: scroll;
+}
+.card-image {
+  height: auto;
+  width: auto;
+}
+.name {
+  position: absolute;
+  margin-left: 0.5rem;
+  bottom: 0.8rem;
+}
+.content {
+  margin-left: 1rem;
 }
 .dish-results {
   padding: 0;
@@ -129,25 +206,9 @@ export default {
   width: 50%;
   margin: 2rem auto;
 }
-.scrollbar {
-  max-height: 30rem;
-  overflow-y: scroll;
-}
-.direction-wrapper {
-  margin: 1rem 2rem 0 2rem;
-  display: flex;
-  justify-content: space-between;
-}
-.content {
-  margin-left: 1rem;
-}
-.name {
-  position: absolute;
-  margin-left: 0.5rem;
-  bottom: 0.8rem;
-}
-.card-image {
-  height: auto;
-  width: auto;
+.filter-box {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 </style>
