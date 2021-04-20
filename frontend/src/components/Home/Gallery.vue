@@ -34,7 +34,7 @@ export default {
       let self = this;
       console.log(this.images);
       axios
-        .get(`http://127.0.0.1:8000/dishes/${name}`)
+        .get(`http://155.138.211.205/dishes/${name}`)
         .then(function(response) {
           let tempArr = [];
           for (let i = 0; i < 4; ++i) {

@@ -73,7 +73,7 @@ export default {
     // while typing
     let self = this;
     axios
-      .get(`http://127.0.0.1:8000/ingredients/`)
+      .get(`http://155.138.211.205/ingredients/`)
       .then(function(response) {
         let data = response.data["data"]["ingredients"];
         for (let ingredient of data) {

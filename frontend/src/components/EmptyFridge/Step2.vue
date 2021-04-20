@@ -114,7 +114,7 @@ export default {
     /* Here we just get the generated recipes of the ingredients that we had 
     from step 1  */
     let self = this;
-    let url = "http://127.0.0.1:8000/recipes/?";
+    let url = "http://155.138.211.205/?";
     let selected = JSON.parse(JSON.stringify(this.chosen));
 
     for (let ingredient of selected) {
