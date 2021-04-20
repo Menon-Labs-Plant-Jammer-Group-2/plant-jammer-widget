@@ -135,6 +135,7 @@ def get_recipe_route(q: List[str] = Query(None)):
 
 def get_recipe(keywords: List[str]):
     ids = [int(i[0]) for i in get_ids(keywords)["response"]]
+    print(ids)
     keywords = " ".join(keywords)
     query_template = Template(
         """query getRecipe {
@@ -153,7 +154,7 @@ def get_recipe(keywords: List[str]):
         amount
       }
       ratio {
-        volumes(ingredients:$ids portions: 3) {
+        volumes(ingredients:$ids portions: 1) {
           ingredient {
             name
           }
