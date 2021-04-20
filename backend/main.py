@@ -142,6 +142,9 @@ def get_recipe(keywords: List[str]):
     searchScore
       name
       estimatedPreparationTime
+      mandatoryIngredients{
+        name
+      }
       image{
           url
       }
@@ -152,7 +155,6 @@ def get_recipe(keywords: List[str]):
       ratio {
         volumes(ingredients:$ids portions: 3) {
           ingredient {
-            id
             name
           }
           grams
@@ -162,10 +164,6 @@ def get_recipe(keywords: List[str]):
         instructions(ingredients:$ids) {
           text
           method
-          ingredients {
-            id
-            name
-          }
         }
       }
     }

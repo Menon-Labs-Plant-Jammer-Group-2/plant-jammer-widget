@@ -44,6 +44,7 @@
       :filteredTimes.sync="filteredTimes"
       :timeClicked.sync="timeClicked"
       :selectedDish.sync="selectedDish"
+      :suggestedNames.sync="suggestedNames"
       v-if="step===1"
     />
     <step3 :selectedDish.sync="selectedDish" :chosen="chosen" :step.sync="step" v-if="step===2" />
@@ -72,7 +73,7 @@ export default {
     return {
       step: 0,
       chosen: [],
-      steps: ["Common ingredients", "Choose dish", "Finalize"],
+      steps: ["Select ingredients", "Choose dish", "Finalize"],
       fridgeClicked: false,
       filterClicked: false,
       searchData: [],

@@ -136,14 +136,11 @@ export default {
             }
           };
           if (!self.suggestedNames.has(dish["name"])) {
-            self.suggestedNames.add(dish["name"]);
             tempObj.push(properties);
+            self.suggestedNames.add(dish["name"]);
           }
         }
-
-        console.log(self.searchData);
-        self.$emit("update:searchData", tempObj);
-
+        if (tempObj.length !== 0) self.$emit("update:searchData", tempObj);
         console.log(self.searchData);
         self.finished = true;
       })
