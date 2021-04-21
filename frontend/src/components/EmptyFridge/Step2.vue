@@ -148,7 +148,6 @@ export default {
         let tempObj = [];
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
-          console.log(dish);
           let properties = {
             properties: {
               name: dish["name"],
@@ -166,7 +165,6 @@ export default {
           }
         }
         if (tempObj.length !== 0) self.$emit("update:searchData", tempObj);
-        console.log(self.searchData);
         self.finished = true;
       })
       .catch(function(error) {
