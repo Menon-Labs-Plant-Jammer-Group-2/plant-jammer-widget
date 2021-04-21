@@ -14,11 +14,11 @@
         <button
           @click="$emit('update:filterClicked',true)"
           class="filter-button button is-white"
-        >Filter</button>
+        >FILTER</button>
         <button
           @click="$emit('update:fridgeClicked',true)"
           class="fridge-button button is-white"
-        >Your fridge</button>
+        >YOUR FRIDGE</button>
       </div>
       <div>
         <h1>We found {{searchData.length}} recipes</h1>
@@ -153,7 +153,7 @@ export default {
       return this.filterSearch(this.searchData);
     },
     filteredDishesTime: function() {
-      return this.filterSearch(this.searchData);
+      return this.filterSearch(this.filteredTimes);
     }
   }
 };

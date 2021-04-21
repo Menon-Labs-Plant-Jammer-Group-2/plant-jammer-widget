@@ -95,6 +95,9 @@ def get_ingredients(ingredient: str):
                 ingredients(searchName:"$ingredient") {
                     id
                     name
+                    icon{
+                        url
+                    }
                 }
             }""")
     query = {

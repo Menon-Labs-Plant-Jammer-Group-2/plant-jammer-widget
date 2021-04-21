@@ -128,6 +128,7 @@ export default {
               measurements: data[count]["ratio"]["volumes"],
               instructions: data[count]["blueprint"]["instructions"]
             };
+            console.log(self.dishInfo);
           }
           count += 1;
         }

@@ -1,8 +1,6 @@
 # To do
 
-- Complete finish UI for finalize section
 - Get started on making CSS changes
-- Heroku
 
 - Generate pdf and a link to share through pdfkit
 

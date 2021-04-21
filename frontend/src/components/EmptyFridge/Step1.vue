@@ -1,8 +1,8 @@
 <template>
   <div>
-    <p class="sub title is-4">Select at least 1 ingredient</p>
-    <p class="sub title is-6">Select ingredients you'd like to cook with</p>
-    <p class="sub title is-6">with to create a recipe</p>
+    <p class="sub1 title is-4">SELECT AT LEAST 1 INGREDIENT</p>
+    <p class="sub2 title is-6">Select ingredients you'd like to cook with</p>
+    <p class="sub2 title is-6">with to create a recipe</p>
     <div class="field">
       <div class="input-wrapper">
         <p class="control has-icons-right">
@@ -25,8 +25,11 @@
       @mouseleave="searchFocus = false"
       v-if="inputFocus || searchFocus"
     >
-      <div class="parent" v-for="ingredient in filteredIngredients" :key="ingredient">
-        <button class="result button is-white" @click="addIngredients(ingredient)">{{ingredient}}</button>
+      <div class="parent" v-for="ingredient in filteredIngredients" :key="ingredient['name']">
+        <button
+          class="result button is-white"
+          @click="addIngredients(ingredient['name'])"
+        >{{ingredient['name']}}</button>
       </div>
     </div>
     <p v-if="chosen.length>=1" class="title is-4">The ingredients you've selected</p>
@@ -77,7 +80,10 @@ export default {
       .then(function(response) {
         let data = response.data["data"]["ingredients"];
         for (let ingredient of data) {
-          self.searchData.push(ingredient["name"]);
+          self.searchData.push({
+            name: ingredient["name"],
+            icon: ingredient["icon"]["url"]
+          });
         }
         console.log(self.searchData);
       })
@@ -92,7 +98,9 @@ export default {
       var self = this;
       let filteredData = this.searchData.filter(function(ingredient) {
         return (
-          ingredient.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0
+          ingredient["name"]
+            .toLowerCase()
+            .indexOf(self.searchQuery.toLowerCase()) >= 0
         );
       });
       return filteredData.slice(0, 6);
@@ -116,11 +124,27 @@ input {
   border: 1px solid #e2f7cb;
 }
 ::placeholder {
-  color: #2d5d4c;
+  color: #a1c09c;
 }
-.sub {
+
+.sub1 {
+  font-size: 2rem;
+  /* identical to box height */
   padding: 0;
   margin: 0;
+  /* Color 2 */
+  font-family: "Bebas Neue";
+  font-style: normal;
+  font-weight: 400;
+  color: #459071;
+}
+.sub2 {
+  padding: 0;
+  margin: 0;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1rem;
+  color: #459071;
 }
 .parent {
   display: flex;
