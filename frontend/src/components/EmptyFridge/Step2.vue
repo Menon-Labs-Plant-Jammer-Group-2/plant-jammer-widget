@@ -11,10 +11,12 @@
       </div>
 
       <div class="metadata">
-        <button
-          @click="$emit('update:filterClicked',true)"
-          class="filter-button button is-white"
-        >FILTER</button>
+        <button @click="$emit('update:filterClicked',true)" class="filter-button button is-white">
+          <span class="icon">
+            <i class="fas fa-sliders-h"></i>
+          </span>
+          <span>FILTER</span>
+        </button>
         <button
           @click="$emit('update:fridgeClicked',true)"
           class="fridge-button button is-white"
@@ -27,19 +29,36 @@
         <div class="scrollbar">
           <div
             class="dish-results"
-            v-for="dish in (timeClicked ?  filteredDishesTime : filteredDishes)"
+            v-for="(dish,index) in (timeClicked ?  filteredDishesTime : filteredDishes)"
             :key="dish['properties']['name']"
           >
-            <div @click="selected(dish)" class="card">
+            <div
+              @mouseover="showDescription = index"
+              @mouseleave="showDescription = -1"
+              @click="selected(dish)"
+              class="card"
+            >
               <div class="card-image">
-                <img :src="dish['properties']['image']" alt="Placeholder image" />
+                <img class="dish-image" :src="dish['properties']['image']" alt="Placeholder image" />
+                <div
+                  v-if="showDescription===index"
+                  class="dish-description"
+                >{{dish['properties']['description']}}</div>
                 <div class="name">
-                  <p class="title is-4">{{dish["properties"]["name"]}}</p>
+                  <p class="dish-name title is-4">{{dish["properties"]["name"]}}</p>
                 </div>
               </div>
               <div class="content">
-                Time
-                <div class="time">{{dish['properties']["time"]}} minutes</div>
+                <div>
+                  Time
+                  <div class="time">{{dish['properties']["time"]}} minutes</div>
+                </div>
+                <div>
+                  Required
+                  <div
+                    v-if="dish['properties']['required']"
+                  >{{dish['properties']['required'].join(", ")}}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -94,7 +113,8 @@ export default {
     return {
       searchQuery: "",
       finished: false,
-      selectedClicked: false
+      selectedClicked: false,
+      showDescription: -1
     };
   },
   methods: {
@@ -128,11 +148,16 @@ export default {
         let tempObj = [];
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
+          console.log(dish);
           let properties = {
             properties: {
               name: dish["name"],
               time: dish["estimatedPreparationTime"],
-              image: dish["image"]["url"]
+              image: dish["image"]["url"],
+              required: dish["mandatoryIngredients"].map(
+                ingredient => ingredient["name"]
+              ),
+              description: dish["description"]
             }
           };
           if (!self.suggestedNames.has(dish["name"])) {
@@ -181,6 +206,16 @@ input {
   display: flex;
   justify-content: space-between;
 }
+.filter-button {
+  font-family: "Bebas Neue";
+  font-size: 1.5rem;
+  color: #2d5d4c;
+}
+.fridge-button {
+  font-family: "Bebas Neue";
+  font-size: 1.5rem;
+  color: #2d5d4c;
+}
 .fa-search {
   color: #459071;
 }
@@ -198,7 +233,36 @@ input {
   bottom: 0.8rem;
 }
 .content {
-  margin-left: 1rem;
+  margin: 0 1rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+}
+.card {
+  border-radius: 10px;
+  background: #58977d;
+}
+.dish-name {
+  font-family: Bebas Neue;
+  color: white;
+  font-size: 2rem;
+}
+.dish-image {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  width: 100%;
+  position: relative;
+}
+.dish-description {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 1rem;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0%;
+  color: white;
+  background: #2d5d4c;
 }
 .dish-results {
   padding: 0;

@@ -4,6 +4,15 @@
     <p class="sub2 title is-6">Select ingredients you'd like to cook with</p>
     <p class="sub2 title is-6">with to create a recipe</p>
     <div class="field">
+      <p v-if="chosen.length>=1" class="title is-4">The ingredients you've selected</p>
+      <div class="holder">
+        <p class="item" v-for="chose in holder" :key="chose['name']">
+          <span class="icon">
+            <img class="icon-ingredient" :src="chose['icon']" />
+          </span>
+          {{chose["name"]}}
+        </p>
+      </div>
       <div class="input-wrapper">
         <p class="control has-icons-right">
           <input
@@ -26,16 +35,15 @@
       v-if="inputFocus || searchFocus"
     >
       <div class="parent" v-for="ingredient in filteredIngredients" :key="ingredient['name']">
-        <button
-          class="result button is-white"
-          @click="addIngredients(ingredient['name'])"
-        >{{ingredient['name']}}</button>
+        <button class="result button is-white" @click="addIngredients(ingredient)">
+          <span class="icon">
+            <img class="icon-ingredient" :src="ingredient['icon']" />
+          </span>
+          <span>{{ingredient['name']}}</span>
+        </button>
       </div>
     </div>
-    <p v-if="chosen.length>=1" class="title is-4">The ingredients you've selected</p>
-    <div class="holder">
-      <p class="item" v-for="chose in chosen" :key="chose">{{chose}}</p>
-    </div>
+
     <div v-if="chosen.length >= 1" class="next-wrapper">
       <button @click="$emit('update:step',1)" class="next button is-success">
         <span class="icon is-small">
@@ -60,14 +68,16 @@ export default {
     return {
       searchQuery: "",
       searchData: [],
+      holder: [],
       inputFocus: false,
       searchFocus: false
     };
   },
   methods: {
     addIngredients(ingredient) {
-      if (!this.chosen.includes(ingredient)) {
-        this.chosen.push(ingredient);
+      if (!this.chosen.includes(ingredient["name"])) {
+        this.holder.push(ingredient);
+        this.chosen.push(ingredient["name"]);
       }
     }
   },
@@ -82,7 +92,7 @@ export default {
         for (let ingredient of data) {
           self.searchData.push({
             name: ingredient["name"],
-            icon: ingredient["icon"]["url"]
+            icon: ingredient["icon"]["url"] || ""
           });
         }
         console.log(self.searchData);
@@ -122,11 +132,14 @@ export default {
 input {
   color: #2d5d4c;
   border: 1px solid #e2f7cb;
+  position: static;
 }
 ::placeholder {
   color: #a1c09c;
 }
-
+.icon-ingredient {
+  fill: #2d5d4c;
+}
 .sub1 {
   font-size: 2rem;
   /* identical to box height */
@@ -154,6 +167,7 @@ input {
   justify-content: left;
   width: 80%;
   border: none;
+  color: #2d5d4c;
 }
 .item {
   text-align: center;

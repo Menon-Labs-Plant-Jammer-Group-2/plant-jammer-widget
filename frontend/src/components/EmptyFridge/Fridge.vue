@@ -3,10 +3,15 @@
     <div class="exit-wrapper">
       <button @click="$emit('update:fridgeClicked',false)" class="delete exit"></button>
     </div>
-    <p class="filter-title title is-3">Your fridge</p>
+    <p class="fridge-title title is-3">Your fridge</p>
     <div v-if="!noIngredients">
-      <div class="input-wrapper">
-        <input class="input is-rounded" v-model="searchQuery" type="text" placeholder="Search" />
+      <div class="input-wrapper has-icons-right">
+        <input
+          class="input fridge-input is-rounded"
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search"
+        />
       </div>
       <div class="holder">
         <div class="item" v-for="chose in filteredData" :key="chose">
@@ -103,22 +108,37 @@ export default {
 
 .fridge-box {
   position: absolute;
-  z-index: 10;
-  margin: 0 0 0 50%;
-  height: 100%;
+  z-index: 40;
+  margin: 10% 0 0 50% !important;
+  height: 70%;
+  background: #459071;
+}
+.fridge-title {
+  color: white;
+  font-weight: 10;
+  margin-bottom: 2rem !important;
+  padding-top: 0 !important;
 }
 .input-wrapper {
   width: 80%;
   margin: 0 auto 2rem auto;
+  display: flex;
 }
 .item {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.item {
   text-align: center;
+  color: white;
 }
+.fridge-input {
+  background: inherit;
+  color: white;
+}
+::placeholder {
+  color: white;
+}
+
 .delete-wrapper {
   margin: 0.3rem 0 0 0.2rem;
 }

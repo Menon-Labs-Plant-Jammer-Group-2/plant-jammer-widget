@@ -59,7 +59,6 @@ export default {
       let newTimes = this.searchData.filter(
         recipe => recipe["properties"]["time"] <= time
       );
-      // this.$emit("update:searchData", newTimes);
       this.$emit("update:timeClicked", true);
       this.$emit("update:filteredTimes", newTimes);
     }
@@ -72,9 +71,16 @@ export default {
   margin-top: 4%;
   margin-left: 90%;
 }
+.filter-title {
+  color: white;
+}
 .list-filter {
   list-style-type: none;
   margin-left: 1rem;
+  color: white;
+}
+.next {
+  color: inherit;
 }
 .slider-wrapper {
   margin: 0 auto;
@@ -85,9 +91,10 @@ export default {
 }
 .filter-box {
   position: absolute;
-  z-index: 10;
-  margin: 0 0 0 50%;
-  height: 100%;
+  z-index: 40;
+  margin: 10% 0 0 50% !important;
+  height: 70%;
+  background: #459071;
 }
 .range {
   margin: 0 auto 0 auto;

@@ -30,7 +30,7 @@
         >
           <a href="#" class="steps-marker"></a>
           <div class="steps-content">
-            <p class="is-size-6">{{dot}}</p>
+            <p class="step is-size-6">{{dot}}</p>
           </div>
         </li>
       </ul>
@@ -135,7 +135,7 @@ export default {
 }
 .steps-wrapper {
   text-align: center;
-  margin-top: 4rem;
+  margin-top: 1.5rem;
   margin-bottom: 2rem;
 }
 .steps {
@@ -159,7 +159,9 @@ li.steps-segment::after {
   margin: 0;
   background: #e2f7cb;
 }
-
+.step {
+  color: #2d5d4c;
+}
 li.steps-segment.is-active::after {
   margin: 0;
   background: #e2f7cb;

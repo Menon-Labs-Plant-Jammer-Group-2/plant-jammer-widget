@@ -146,6 +146,7 @@ def get_recipe(keywords: List[str]):
     searchScore
       name
       estimatedPreparationTime
+      description
       mandatoryIngredients{
         name
       }
