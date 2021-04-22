@@ -7,7 +7,8 @@
       </div>
 
       <div class="header">
-        <div class="title is-2">{{dishInfo['name']}}</div>
+        <div class="recipe-title title is-2">{{dishInfo['name']}}</div>
+        <!-- <div class="banner"></div> -->
         <div class="icon-wrapper">
           <i class="fas fa-share-alt"></i>
         </div>
@@ -117,6 +118,7 @@ export default {
         let count = 0;
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
+          console.log(dish);
           if (self.selectedDish === dish["name"]) {
             self.dishInfo = {
               name: data[count]["name"],
@@ -128,6 +130,7 @@ export default {
               measurements: data[count]["ratio"]["volumes"],
               instructions: data[count]["blueprint"]["instructions"]
             };
+            console.log(self.dishInfo);
           }
           count += 1;
         }
@@ -169,6 +172,15 @@ export default {
   justify-content: center;
   align-items: center;
 }
+.banner {
+  position: absolute;
+  width: 70%;
+  height: 2%;
+  left: 4%;
+  top: 50%;
+  z-index: auto;
+  background: #e2f7cb;
+}
 .icon-wrapper {
   margin-top: 0.8rem;
   margin-left: 2rem;
@@ -178,6 +190,17 @@ export default {
   display: flex;
   justify-content: space-evenly;
   align-items: flex-start;
+}
+.recipe-title {
+  font-family: Bebas Neue;
+  padding-top: 1rem;
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  z-index: 4;
+  /* Color 1 */
+
+  color: #2d5d4c;
 }
 .time-wrapper {
   display: flex;
@@ -195,10 +218,22 @@ export default {
   justify-content: center;
   align-items: center;
 }
+.minutes {
+  font-family: Bebas Neue;
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  color: #67b093;
+}
 .mandatory-list {
   list-style-type: none;
   margin-left: 0.8rem;
   text-align: center;
+  font-family: Bebas Neue;
+  font-style: normal;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  color: #67b093;
 }
 .ingredients-list {
   list-style-type: none;
@@ -212,9 +247,17 @@ export default {
 }
 .time {
   margin: 0;
+  color: #b1cbad;
+  letter-spacing: 0.08em;
+  font-style: normal;
+  font-weight: normal;
 }
 .required {
   margin: 0;
+  color: #b1cbad;
+  letter-spacing: 0.08em;
+  font-style: normal;
+  font-weight: normal;
 }
 .line {
   font-size: 5rem;
@@ -224,12 +267,12 @@ export default {
 .ing {
   margin: 0;
   text-align: left;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem !important;
 }
 .ins {
   margin: 0;
   text-align: left;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem !important;
 }
 .instructions {
   width: 80%;

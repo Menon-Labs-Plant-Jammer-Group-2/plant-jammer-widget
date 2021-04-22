@@ -95,6 +95,9 @@ def get_ingredients(ingredient: str):
                 ingredients(searchName:"$ingredient") {
                     id
                     name
+                    icon{
+                        url
+                    }
                 }
             }""")
     query = {
@@ -143,6 +146,7 @@ def get_recipe(keywords: List[str]):
     searchScore
       name
       estimatedPreparationTime
+      description
       mandatoryIngredients{
         name
       }
