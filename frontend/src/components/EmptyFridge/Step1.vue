@@ -62,13 +62,13 @@ export default {
   components: {},
   props: {
     step: Number,
-    chosen: Array
+    chosen: Array,
+    holder: Array
   },
   data() {
     return {
       searchQuery: "",
       searchData: [],
-      holder: [],
       inputFocus: false,
       searchFocus: false
     };
@@ -92,7 +92,7 @@ export default {
         for (let ingredient of data) {
           self.searchData.push({
             name: ingredient["name"],
-            icon: ingredient["icon"]["url"] || ""
+            icon: ingredient["icon"]["url"] ?? ""
           });
         }
         console.log(self.searchData);

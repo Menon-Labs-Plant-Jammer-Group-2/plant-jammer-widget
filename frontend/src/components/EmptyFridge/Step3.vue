@@ -8,15 +8,10 @@
 
       <div class="header">
         <div class="recipe-title title is-2">{{dishInfo['name']}}</div>
-        <!-- <div class="banner"></div> -->
-        <div class="icon-wrapper">
-          <i class="fas fa-share-alt"></i>
-        </div>
         <div class="icon-wrapper">
           <i class="fas fa-download"></i>
         </div>
       </div>
-
       <div class="metadata-recipe">
         <div class="time-wrapper">
           <div class="time title is-4">Time</div>
@@ -35,27 +30,27 @@
           <div v-else>None</div>
         </div>
       </div>
-
       <div class="ingredients">
         <div class="ing title is-4">Ingredients</div>
         <div
           class="ingredients-container"
-          v-for="ingredient in allIngredients"
+          v-for="(ingredient,index) in allIngredients"
           :key="ingredient['name']"
         >
           <li
             class="ingredients-list"
           >{{ingredient['measurement']!==undefined ? `${ingredient['measurement']['grams']}g`:''}} {{ingredient['name']}}</li>
           <button
-            @click="substituteModal = true"
+            @click="substituteModal = index"
             class="substitute button is-white is-small"
           >Substitute</button>
-          <div v-if="substituteModal" class="modal is-active substitute-modal">
-            <div class="modal-background"></div>
-            <div class="modal-card">
-              <section class="modal-card-body">We will display substitutable ingredients here</section>
+          <div v-if="substituteModal===index" class="box is-active substitute-modal">
+            <div class="header-modal">
+              <div class="substitute-text">Substitute {{ingredient['name']}} for:</div>
+              <div class="delete-wrapper">
+                <button @click="substituteModal = -1" class="delete delete-modal"></button>
+              </div>
             </div>
-            <button @click="substituteModal = false" class="delete delete-modal"></button>
           </div>
         </div>
       </div>
@@ -99,7 +94,7 @@ export default {
     return {
       dishInfo: {},
       finished: false,
-      substituteModal: false
+      substituteModal: -1
     };
   },
   async mounted() {
@@ -109,7 +104,7 @@ export default {
 
     for (let ingredient of selected) {
       ingredient = ingredient.split(" ").join("");
-      url += `q=${ingredient}&`;
+      url += `q='${ingredient}'&`;
     }
     url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
     axios
@@ -121,6 +116,7 @@ export default {
           console.log(dish);
           if (self.selectedDish === dish["name"]) {
             self.dishInfo = {
+              id: data[count]["id"],
               name: data[count]["name"],
               mandatory: data[count]["mandatoryIngredients"],
               time: data[count]["estimatedPreparationTime"],
@@ -301,24 +297,32 @@ export default {
   width: 100%;
   max-height: 20rem;
 }
-.substitute-modal {
-  height: 10%;
-  bottom: auto;
-  width: 50%;
-  top: 50%;
-  left: 25%;
-  right: 25%;
-  background: white;
-  z-index: 20;
+.header-modal {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
-.modal-background {
-  background-color: white;
+.substitute-text {
+  margin-top: 5%;
+  text-align: center;
+  font-size: 1rem;
+  /* Color 1 */
+  font-weight: 600;
+  color: #2d5d4c;
 }
-.modal-card {
-  height: 100%;
+.delete-wrapper {
+  padding-left: 30%;
 }
 .delete-modal {
-  left: 40%;
-  top: -70%;
+  padding: 0 auto;
+}
+.substitute-modal {
+  background: #f9f9f9;
+  border: 1px solid #95ce8c;
+  box-sizing: border-box;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 2;
+  margin-left: 10%;
 }
 </style>

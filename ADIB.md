@@ -1,25 +1,30 @@
 # Bugs
 
-- Stepper icon turns into a different color once left
-- Make the result boxes the same height
-- Is reset on fridge necessary, also each time your cancel something in fridge filter it automatically updates for you
-- Can't get search icon in fridge
-- Icons in fridge not included unlessly we make some breaking changes to the code we wrote in step 1
-- Some things are not responsive like the desc. in home page and the back button in empty your fridge frame
-- Highlight underneath the name of the recipe generated is inconsistent
-- Same as above, we would need to work some magic and have an intense code refactoring to get icons in step 3
+- UI
+
+  - Stepper icon turns into a different color once left
+  - Make the result boxes the same height
+  - Is reset on fridge necessary, also each time your cancel something in fridge filter it automatically updates for you
+  - Can't get search icon in fridge
+  - Icons in fridge not included unlessly we make some breaking changes to the code we wrote in step 1
+  - Some things are not responsive like the desc. in home page and the back button in empty your fridge frame
+  - Highlight underneath the name of the recipe generated is inconsistent
+  - Same as above, we would need to work some magic and have an intense code refactoring to get icons in step 3
+
+- Frontend
+  - Will the user go back to step 1 to change their selection?
 
 # To do
 
 - Frontend
 
-  - Implement filter functionality
+  - Implement filter functionality, after Davis completes it
   - Substitutable ingredients functionality
   - Dish component to get all ingredients required and measurements
+  - Portions
 
 - Backend
 
-  - share
   - download ( Generate pdf through pdfkit)
   - caching
   - Add testing to backend
@@ -33,3 +38,5 @@
 # Advice
 
 ![](res/2021-04-22-10-53-53.png)
+
+- ~~share, delaying this since we don't have a valid url, use [vue-social-sharing](!https://github.com/nicolasbeauvais/vue-social-sharing)~~, edit: we can't do this since we don't generate a link and Vue.js is mostly a client-side framework. Should've used Nuxt.js if we were to do this

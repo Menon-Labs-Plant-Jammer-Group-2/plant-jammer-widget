@@ -35,7 +35,7 @@
         </li>
       </ul>
     </div>
-    <step1 :chosen="chosen" :step.sync="step" v-if="step===0" />
+    <step1 :chosen="chosen" :step.sync="step" :holder.sync="holder" v-if="step===0" />
     <step2
       :fridgeClicked.sync="fridgeClicked"
       :filterClicked.sync="filterClicked"
@@ -81,7 +81,8 @@ export default {
       filteredTimes: [],
       timeClicked: false,
       selectedDish: "",
-      suggestedNames: new Set()
+      suggestedNames: new Set(),
+      holder: []
     };
   }
 };
