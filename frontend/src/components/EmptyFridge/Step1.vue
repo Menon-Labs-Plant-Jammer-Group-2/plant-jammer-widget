@@ -151,6 +151,19 @@ input {
   font-weight: 400;
   color: #459071;
 }
+@media screen and (min-width: 769px),
+  print .steps:not(.is-vertical) .has-content-centered .steps-segment:not(:last-child) :after {
+  left: 50%;
+  right: -50%;
+  margin: 0 !important;
+}
+.icon-ingredient {
+  color: #2d5d4c !important;
+}
+.steps:not(.is-hollow) .steps-marker:not(.is-hollow) {
+  background-color: #459071 !important;
+  color: #fff;
+}
 .sub2 {
   padding: 0;
   margin: 0;
