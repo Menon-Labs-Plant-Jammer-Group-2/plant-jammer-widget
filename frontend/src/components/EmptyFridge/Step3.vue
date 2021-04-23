@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!finished" class="title is-3">Hang on, we're generating your recipe!</div>
+    <div v-if="!finishedRecipe" class="title is-3">Hang on, we're generating your recipe!</div>
     <div v-else>
       <div class="img-wrapper">
         <img class="img" :src="dishInfo['image']" />
@@ -88,54 +88,102 @@ export default {
   props: {
     chosen: Array,
     step: Number,
-    selectedDish: String
+    selectedDish: String,
+    callbackEmit: Function
   },
   data() {
     return {
       dishInfo: {},
-      finished: false,
-      substituteModal: -1
+      finishedRecipe: false,
+      substituteModal: -1,
+      substituteIngredients: []
     };
   },
-  async mounted() {
-    let self = this;
-    let url = "http://127.0.0.1:8000/recipes/?";
-    let selected = JSON.parse(JSON.stringify(this.chosen));
-
-    for (let ingredient of selected) {
-      ingredient = ingredient.split(" ").join("");
-      url += `q='${ingredient}'&`;
-    }
-    url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
-    axios
-      .get(url)
-      .then(function(response) {
+  methods: {
+    async getIngredients() {
+      let url_ingredients = `http://127.0.0.1:8000/all_ingredients/${this.selectedDish}`;
+      try {
+        const response = await axios.get(url_ingredients);
         let count = 0;
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
-          console.log(dish);
-          if (self.selectedDish === dish["name"]) {
-            self.dishInfo = {
-              id: data[count]["id"],
-              name: data[count]["name"],
-              mandatory: data[count]["mandatoryIngredients"],
-              time: data[count]["estimatedPreparationTime"],
-              image: data[count]["image"]["url"],
-              servingName: data[count]["serving"]["name"],
-              servingAmount: data[count]["serving"]["amount"],
-              measurements: data[count]["ratio"]["volumes"],
-              instructions: data[count]["blueprint"]["instructions"]
+          if (this.selectedDish === dish["name"]) {
+            this.substituteIngredients = {
+              ingredient: data[count]["suggestedIngredients"]
             };
-            console.log(self.dishInfo);
+            let temp = JSON.parse(JSON.stringify(this.substituteIngredients));
+            let newChosen = [];
+            for (let ingredient of temp["ingredient"]) {
+              newChosen.push(ingredient["name"]);
+            }
+            let newChosenSet = new Set([
+              ...JSON.parse(JSON.stringify(this.chosen)),
+              ...newChosen
+            ]);
+            newChosen = [...newChosenSet];
+            console.log(newChosen);
+            await this.callbackEmit(newChosen);
+            this.getRecipe();
+            // debugger; // eslint-disable-line no-debugger
+
+            break;
           }
           count += 1;
         }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    getRecipe() {
+      let self = this;
+      let url = `http://127.0.0.1:8000/recipes/?dish=${this.selectedDish}&`;
+      let temp = this.substituteIngredients["ingredient"];
+      // debugger; // eslint-disable-line no-debugger
 
-        self.finished = true;
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+      for (let ingredient of temp) {
+        url += `id=${parseInt(ingredient["id"])}&`;
+        console.log(url);
+      }
+      url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
+      console.log(url);
+      // debugger; // eslint-disable-line no-debugger
+      axios
+        .get(url)
+        .then(function(response) {
+          // debugger; // eslint-disable-line no-debugger
+
+          let count = 0;
+          let data = response.data["data"]["dishes"];
+          for (let dish of data) {
+            console.log(dish);
+            if (self.selectedDish === dish["name"]) {
+              self.dishInfo = {
+                name: data[count]["name"],
+                mandatory: data[count]["mandatoryIngredients"],
+                time: data[count]["estimatedPreparationTime"],
+                image: data[count]["image"]["url"],
+                servingName: data[count]["serving"]["name"],
+                servingAmount: data[count]["serving"]["amount"],
+                measurements: data[count]["ratio"]["volumes"],
+                instructions: data[count]["blueprint"]["instructions"]
+              };
+              console.log(self.dishInfo);
+              // debugger; // eslint-disable-line no-debugger
+            }
+            count += 1;
+          }
+
+          self.finishedRecipe = true;
+        })
+        .catch(function(error) {
+          // debugger; // eslint-disable-line no-debugger
+
+          console.log(error);
+        });
+    }
+  },
+  async mounted() {
+    return this.getIngredients();
   },
   computed: {
     allIngredients: function() {
@@ -149,7 +197,6 @@ export default {
       );
       let mergedIngredients = [...newChosen, ...newDishInfo];
       let ingredientsSet = new Set(mergedIngredients); // for duplicate ingredients
-
       let ingredientsName = Array.from(ingredientsSet);
       let finalIngredients = ingredientsName.map((ingredient, i) => ({
         name: ingredient,

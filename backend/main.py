@@ -56,7 +56,7 @@ def get_dishes_route(keyword: str):
 def get_dishes(keyword: str):
     query_template = Template(
         """query dishes {
-            dishes(search:{keywords:"$keyword"}, pagination:{limitTo:5}, djangoFilter:{orderBy:"search_score"}) {
+            dishes(search:{keywords:"$keyword"}, djangoFilter:{orderBy:"search_score"}) {
                 name
                 recipeNote
                 description
@@ -140,12 +140,18 @@ def get_ids(ingredients: List[str]):
 
 
 @app.get('/recipes/')
-def get_recipe_route(q: List[str] = Query(None)):
+def get_recipe_route(q: List[str] = Query(None), id: Optional[List[int]] = Query(None), dish: Optional[str] = Query(None)):
     '''
     To get a recipe based on a string containing all the ingredients
     '''
-    print(q)
-    data = get_recipe(q)
+    print(id)
+    print(dish)
+    if id:
+        print('hi')
+        data = get_recipe_ids(dish, id)
+    else:
+        print('hello')
+        data = get_recipe(q)
     return data
 
 
@@ -193,6 +199,47 @@ def get_recipe(keywords: List[str]):
     return data
 
 
+def get_recipe_ids(dish: str, ids: List[str]):
+    query_template = Template(
+        """query getRecipe {
+    dishes(search:{keywords:"$dish"},djangoFilter:{orderBy:"search_score"}){
+    searchScore
+      name
+      estimatedPreparationTime
+      description
+      mandatoryIngredients{
+        name
+      }
+      image{
+          url
+      }
+      serving {
+        name
+        amount
+      }
+      ratio {
+        volumes(ingredients:$ids portions: 1) {
+          ingredient {
+            name
+          }
+          grams
+        }
+      }
+      blueprint {
+        instructions(ingredients:$ids) {
+          text
+          method
+        }
+      }
+    }
+  }""")
+    query = {
+        'query': query_template.substitute(dish=dish, ids=ids)}
+    r = http.request('POST', url, fields=query, headers=headers)
+    data = json.loads(r.data.decode('utf-8'))
+    return data
+
+
 @app.get('/substitutes/')
 def get_substitutes_route(dish: int = Query(None), sub: List[str] = Query(None)):
     '''
@@ -215,6 +262,37 @@ def get_substitutes(dish: int, sub: List[str]):
     query_template = query_template_start + \
         query_template_middle + query_template_end
     query_template = Template(query_template)
+    query = {
+        'query': query_template.substitute(dish=dish)}
+    r = http.request('POST', url, fields=query, headers=headers)
+    data = json.loads(r.data.decode('utf-8'))
+    return data
+
+
+@app.get('/all_ingredients/{dish}')
+def get_all_ingredients_route(dish: str):
+    '''
+    Get all the ingredients for a dish
+    '''
+    data = get_all_ingredients(dish)
+    return data
+
+
+def get_all_ingredients(dish: str):
+    query_template = Template("""query getRecipe {
+    dishes(search:{keywords:"$dish"},djangoFilter:{orderBy:"search_score"}){
+    searchScore
+      name
+    suggestedIngredients{
+      name
+      id
+      substitutes{
+        name
+      }
+    }
+     
+  }
+   } """)
     query = {
         'query': query_template.substitute(dish=dish)}
     r = http.request('POST', url, fields=query, headers=headers)

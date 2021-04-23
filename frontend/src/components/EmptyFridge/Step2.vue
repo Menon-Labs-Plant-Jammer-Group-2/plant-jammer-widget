@@ -140,7 +140,7 @@ export default {
 
     for (let ingredient of selected) {
       ingredient = ingredient.split(" ").join("");
-      this.url += `q=${ingredient}&`; // CHANGED
+      this.url += `q=${ingredient}&`;
     }
     this.url = this.url.slice(0, this.url.length - 1); // to remove the extra & since that would mess with our backend
     axios

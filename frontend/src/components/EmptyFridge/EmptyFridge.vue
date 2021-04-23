@@ -48,7 +48,13 @@
       :suggestedNames.sync="suggestedNames"
       v-if="step===1"
     />
-    <step3 :selectedDish.sync="selectedDish" :chosen="chosen" :step.sync="step" v-if="step===2" />
+    <step3
+      :callbackEmit="callbackEmit"
+      :selectedDish.sync="selectedDish"
+      :chosen.sync="chosen"
+      :step.sync="step"
+      v-if="step===2"
+    />
   </div>
 </template>
 
@@ -84,6 +90,12 @@ export default {
       suggestedNames: new Set(),
       holder: []
     };
+  },
+  methods: {
+    callbackEmit(newChosen) {
+      this.chosen = newChosen;
+      // this.$emit("update:chosen", newChosen);
+    }
   }
 };
 </script>

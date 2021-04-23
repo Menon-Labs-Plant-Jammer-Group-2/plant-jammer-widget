@@ -13,15 +13,22 @@
 
 - Frontend
   - Will the user go back to step 1 to change their selection?
+  - How do I add what the user selected already?
+  - Fix some of the measurements
+  - Fix up chosen stuff, so that it won't get messed up
 
 # To do
+
+- How do I asynchronously capture an emitted value
 
 - Frontend
 
   - Implement filter functionality, after Davis completes it
-  - Substitutable ingredients functionality
+  - Fix measurements bug
+  - Substitutable ingredients functionality !!!!
   - Dish component to get all ingredients required and measurements
   - Portions
+  - Fix functions in async mounted
 
 - Backend
 
