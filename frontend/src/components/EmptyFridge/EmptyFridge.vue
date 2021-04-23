@@ -49,7 +49,6 @@
       v-if="step===1"
     />
     <step3
-      :callbackEmit="callbackEmit"
       :selectedDish.sync="selectedDish"
       :chosen.sync="chosen"
       :step.sync="step"
@@ -91,12 +90,7 @@ export default {
       holder: []
     };
   },
-  methods: {
-    callbackEmit(newChosen) {
-      this.chosen = newChosen;
-      // this.$emit("update:chosen", newChosen);
-    }
-  }
+  methods: {}
 };
 </script>
 

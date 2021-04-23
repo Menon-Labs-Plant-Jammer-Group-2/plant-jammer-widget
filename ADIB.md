@@ -16,6 +16,7 @@
   - Will the user go back to step 1 to change their selection?
   - How do I add what the user selected already?
   - For some of the recipes it times out cause it's too big
+  - When we remove an ingredient the recipe doesn't update
 
 - Backend
   - Why can I not set a pagination limit on the number of substitutes
@@ -25,8 +26,8 @@
 - Frontend
   - Portions, if current implementation is fast we will add this later on
   - Tests
-  - Fix transition between step 3 and step 2, chosen should not be mutated
   - Fix functions in async mounted, stop using promises
+  - **Change volumes and recipe if ingredient has been substituted**
 
 # Potential features
 
@@ -39,7 +40,6 @@
 - Frontend
 
   - Implement filter functionality, after Davis completes it
-  - Substitutable ingredients functionality !!!!
 
 - Backend
 
