@@ -3,7 +3,7 @@
     <div v-if="!finishedRecipe" class="title is-3">Hang on, we're generating your recipe!</div>
     <div v-else>
       <div class="img-wrapper">
-        <img class="img" :src="dishInfo['image']" />
+        <img class="img" :src="dishInfo['image']" alt="placeholder" />
       </div>
 
       <div class="header">
@@ -96,16 +96,20 @@ export default {
       dishInfo: {},
       finishedRecipe: false,
       substituteModal: -1,
-      substituteIngredients: []
+      substituteIngredients: [],
+      userChosen: []
     };
   },
   methods: {
     async getIngredients() {
       let url_ingredients = `http://127.0.0.1:8000/all_ingredients/${this.selectedDish}`;
+      this.userChosen = JSON.parse(JSON.stringify(this.chosen));
       try {
         const response = await axios.get(url_ingredients);
         let count = 0;
+        console.log(response.data["data"]);
         let data = response.data["data"]["dishes"];
+
         for (let dish of data) {
           if (this.selectedDish === dish["name"]) {
             this.substituteIngredients = {
@@ -140,18 +144,21 @@ export default {
       let temp = this.substituteIngredients["ingredient"];
       // debugger; // eslint-disable-line no-debugger
 
+      // suggested ingredients
       for (let ingredient of temp) {
         url += `id=${parseInt(ingredient["id"])}&`;
-        console.log(url);
       }
+      // user chosen ingredients
+      console.log(this.userChosen);
+      for (let ingredient of this.userChosen) {
+        url += `u=${ingredient}&`;
+      }
+
       url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
       console.log(url);
-      // debugger; // eslint-disable-line no-debugger
       axios
         .get(url)
         .then(function(response) {
-          // debugger; // eslint-disable-line no-debugger
-
           let count = 0;
           let data = response.data["data"]["dishes"];
           for (let dish of data) {
@@ -168,6 +175,7 @@ export default {
                 instructions: data[count]["blueprint"]["instructions"]
               };
               console.log(self.dishInfo);
+              break;
               // debugger; // eslint-disable-line no-debugger
             }
             count += 1;

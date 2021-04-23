@@ -14,8 +14,6 @@
 - Frontend
   - Will the user go back to step 1 to change their selection?
   - How do I add what the user selected already?
-  - Fix some of the measurements
-  - Fix up chosen stuff, so that it won't get messed up
 
 # To do
 
@@ -29,11 +27,12 @@
   - Dish component to get all ingredients required and measurements
   - Portions
   - Fix functions in async mounted
+  - If dishes is undefined return some sort of error message or say we failed
 
 - Backend
 
   - download ( Generate pdf through pdfkit)
-  - caching
+  - cache the images given to you and pass them as a prop to step 3 from step 2
   - Add testing to backend
   - Make the backend directory structure cleaner
 

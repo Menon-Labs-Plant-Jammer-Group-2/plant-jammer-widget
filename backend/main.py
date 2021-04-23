@@ -140,17 +140,16 @@ def get_ids(ingredients: List[str]):
 
 
 @app.get('/recipes/')
-def get_recipe_route(q: List[str] = Query(None), id: Optional[List[int]] = Query(None), dish: Optional[str] = Query(None)):
+def get_recipe_route(q: List[str] = Query(None), id: Optional[List[int]] = Query(None), dish: Optional[str] = Query(None), u: Optional[List[str]] = Query(None)):
     '''
     To get a recipe based on a string containing all the ingredients
     '''
     print(id)
     print(dish)
+    print(q)
     if id:
-        print('hi')
-        data = get_recipe_ids(dish, id)
+        data = get_recipe_ids(dish, id, u)
     else:
-        print('hello')
         data = get_recipe(q)
     return data
 
@@ -199,7 +198,11 @@ def get_recipe(keywords: List[str]):
     return data
 
 
-def get_recipe_ids(dish: str, ids: List[str]):
+def get_recipe_ids(dish: str, ids: List[int], u: List[str]):
+    chosen_ids = [int(each_id[0]) for each_id in get_ids(u)['response']]
+
+    ids += chosen_ids
+    print(ids)
     query_template = Template(
         """query getRecipe {
     dishes(search:{keywords:"$dish"},djangoFilter:{orderBy:"search_score"}){
