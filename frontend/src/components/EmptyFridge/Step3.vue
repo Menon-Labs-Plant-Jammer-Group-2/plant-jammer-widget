@@ -1,6 +1,10 @@
 <template>
-  <div>
-    <div v-if="!finishedRecipe" class="title is-3">Hang on, we're generating your recipe!</div>
+  <div :class="backgroundDark ? 'dark-background' :''">
+    <div v-if="!finishedRecipe && !failed" class="title is-3">Hang on, we're generating your recipe!</div>
+    <div
+      v-else-if="failed"
+      class="title is-3"
+    >Sorry we have a bug :( or the requested recipe made us time out</div>
     <div v-else>
       <div class="img-wrapper">
         <img class="img" :src="dishInfo['image']" alt="placeholder" />
@@ -41,14 +45,28 @@
             class="ingredients-list"
           >{{ingredient['measurement']!==undefined ? `${ingredient['measurement']['grams']}g`:''}} {{ingredient['name']}}</li>
           <button
-            @click="substituteModal = index"
+            v-if="substituteIngredients['ingredient'][index] && substituteIngredients['ingredient'][index]['substitutes'].length>0"
+            @click="changeBackground(index)"
             class="substitute button is-white is-small"
           >Substitute</button>
-          <div v-if="substituteModal===index" class="box is-active substitute-modal">
-            <div class="header-modal">
-              <div class="substitute-text">Substitute {{ingredient['name']}} for:</div>
-              <div class="delete-wrapper">
-                <button @click="substituteModal = -1" class="delete delete-modal"></button>
+
+          <div v-if="substituteModal ===index" class="box is-active substitute-modal">
+            <div>
+              <div class="header-modal">
+                <div>
+                  <div class="substitute-text">Substitute {{ingredient['name']}} for:</div>
+                  <div class="substitute-button-wrapper">
+                    <button
+                      class="button substitute-button is-white"
+                      v-for="substitute in substituteIngredients['ingredient'][index]['substitutes'].slice(0,3)"
+                      :key="substitute['name']"
+                    >{{substitute['name']}}</button>
+                    <button class="button is-rounded remove">REMOVE INGREDIENT</button>
+                  </div>
+                </div>
+                <div class="delete-wrapper">
+                  <button @click="undoBackground()" class="delete delete-modal"></button>
+                </div>
               </div>
             </div>
           </div>
@@ -97,7 +115,9 @@ export default {
       finishedRecipe: false,
       substituteModal: -1,
       substituteIngredients: [],
-      userChosen: []
+      userChosen: [],
+      failed: false,
+      backgroundDark: false
     };
   },
   methods: {
@@ -107,7 +127,6 @@ export default {
       try {
         const response = await axios.get(url_ingredients);
         let count = 0;
-        console.log(response.data["data"]);
         let data = response.data["data"]["dishes"];
 
         for (let dish of data) {
@@ -129,12 +148,12 @@ export default {
             await this.callbackEmit(newChosen);
             this.getRecipe();
             // debugger; // eslint-disable-line no-debugger
-
             break;
           }
           count += 1;
         }
       } catch (err) {
+        this.failed = true;
         console.log(err);
       }
     },
@@ -185,9 +204,17 @@ export default {
         })
         .catch(function(error) {
           // debugger; // eslint-disable-line no-debugger
-
+          this.failed = true;
           console.log(error);
         });
+    },
+    changeBackground(index) {
+      this.substituteModal = index;
+      this.backgroundDark = true;
+    },
+    undoBackground() {
+      this.substituteModal = -1;
+      this.backgroundDark = false;
     }
   },
   async mounted() {
@@ -223,15 +250,11 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.banner {
-  position: absolute;
-  width: 70%;
-  height: 2%;
-  left: 4%;
-  top: 50%;
-  z-index: auto;
-  background: #e2f7cb;
+.dark-background {
+  background: rgba(94, 97, 93, 0.3);
+  opacity: 0.6;
 }
+
 .icon-wrapper {
   margin-top: 0.8rem;
   margin-left: 2rem;
@@ -262,6 +285,15 @@ export default {
 .ingredients {
   width: 80%;
   margin: 0 auto;
+}
+.substitute-button {
+  color: #2d5d4c;
+}
+.substitute-button:hover {
+  background: grey;
+}
+.substitute-button:focus {
+  background: green;
 }
 .required-wrapper {
   display: flex;
@@ -329,7 +361,13 @@ export default {
   width: 80%;
   margin: 0 auto;
 }
-
+.remove {
+  background: #459071;
+  color: white;
+  font-family: Bebas Neue;
+  text-align: center;
+  font-size: 1.5rem;
+}
 .instructions-list {
   list-style-type: none;
   width: 95%;
@@ -354,8 +392,8 @@ export default {
 }
 .header-modal {
   display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+  justify-content: space-around;
+  align-items: flex-start;
 }
 .substitute-text {
   margin-top: 5%;
@@ -365,12 +403,15 @@ export default {
   font-weight: 600;
   color: #2d5d4c;
 }
+.substitute-button-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
 .delete-wrapper {
-  padding-left: 30%;
+  margin-top: 0.5rem;
 }
-.delete-modal {
-  padding: 0 auto;
-}
+
 .substitute-modal {
   background: #f9f9f9;
   border: 1px solid #95ce8c;

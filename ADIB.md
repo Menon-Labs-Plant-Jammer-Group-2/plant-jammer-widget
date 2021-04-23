@@ -12,22 +12,34 @@
   - Same as above, we would need to work some magic and have an intense code refactoring to get icons in step 3
 
 - Frontend
+
   - Will the user go back to step 1 to change their selection?
   - How do I add what the user selected already?
+  - For some of the recipes it times out cause it's too big
+
+- Backend
+  - Why can I not set a pagination limit on the number of substitutes
+
+# If possible
+
+- Frontend
+  - Portions, if current implementation is fast we will add this later on
+  - Tests
+  - Fix transition between step 3 and step 2, chosen should not be mutated
+  - Fix functions in async mounted, stop using promises
+
+# Potential features
+
+- Download
+- Portions
+- Substitutable ingredient changes recipe
 
 # To do
-
-- How do I asynchronously capture an emitted value
 
 - Frontend
 
   - Implement filter functionality, after Davis completes it
-  - Fix measurements bug
   - Substitutable ingredients functionality !!!!
-  - Dish component to get all ingredients required and measurements
-  - Portions
-  - Fix functions in async mounted
-  - If dishes is undefined return some sort of error message or say we failed
 
 - Backend
 
