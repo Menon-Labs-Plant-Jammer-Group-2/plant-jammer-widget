@@ -1,22 +1,21 @@
 <template>
-  <div>
-    <div v-if="!finished" class="title is-3">Hang on, we're generating your recipe!</div>
+  <div :class="backgroundDark ? 'dark-background' :''">
+    <div v-if="!finishedRecipe && !failed" class="title is-3">Hang on, we're generating your recipe!</div>
+    <div
+      v-else-if="failed"
+      class="title is-3"
+    >Sorry we have a bug :( or the requested recipe made us time out</div>
     <div v-else>
       <div class="img-wrapper">
-        <img class="img" :src="dishInfo['image']" />
+        <img class="img" :src="dishInfo['image']" alt="placeholder" />
       </div>
 
       <div class="header">
         <div class="recipe-title title is-2">{{dishInfo['name']}}</div>
-        <!-- <div class="banner"></div> -->
-        <div class="icon-wrapper">
-          <i class="fas fa-share-alt"></i>
-        </div>
         <div class="icon-wrapper">
           <i class="fas fa-download"></i>
         </div>
       </div>
-
       <div class="metadata-recipe">
         <div class="time-wrapper">
           <div class="time title is-4">Time</div>
@@ -35,30 +34,50 @@
           <div v-else>None</div>
         </div>
       </div>
-
       <div class="ingredients">
         <div class="ing title is-4">Ingredients</div>
         <div
           class="ingredients-container"
-          v-for="ingredient in allIngredients"
-          :key="ingredient['name']"
+          v-for="(ingredient,index) in allIngredients['measurements']"
+          :key="ingredient['ingredient']['name']"
         >
           <li
             class="ingredients-list"
-          >{{ingredient['measurement']!==undefined ? `${ingredient['measurement']['grams']}g`:''}} {{ingredient['name']}}</li>
+          >{{ingredient['grams']!==undefined ? `${ingredient['grams']}g`:''}} {{ingredient['ingredient']['name']}}</li>
           <button
-            @click="substituteModal = true"
+            v-if="ingredient['substitutes'] && ingredient['substitutes']['substitutes'].length>0"
+            @click="changeBackground(index)"
             class="substitute button is-white is-small"
           >Substitute</button>
-          <div v-if="substituteModal" class="modal is-active substitute-modal">
-            <div class="modal-background"></div>
-            <div class="modal-card">
-              <section class="modal-card-body">We will display substitutable ingredients here</section>
+
+          <!-- MODAL FOR SUBSTITUTES -->
+          <div v-if="substituteModal ===index" class="box is-active substitute-modal">
+            <div>
+              <div class="header-modal">
+                <div>
+                  <div class="substitute-text">Substitute {{ingredient['ingredient']['name']}} for:</div>
+                  <div class="substitute-button-wrapper">
+                    <button
+                      class="button substitute-button is-white"
+                      v-for="substitute in ingredient['substitutes']['substitutes'].splice(0,3)"
+                      :key="substitute['name']"
+                      @click="substituteThis(ingredient['ingredient']['name'],substitute['name'])"
+                    >{{substitute['name']}}</button>
+                    <button
+                      @click="removeIngredient(ingredient['ingredient']['name'],index)"
+                      class="button is-rounded remove"
+                    >REMOVE INGREDIENT</button>
+                  </div>
+                </div>
+                <div class="delete-wrapper">
+                  <button @click="undoBackground()" class="delete delete-modal"></button>
+                </div>
+              </div>
             </div>
-            <button @click="substituteModal = false" class="delete delete-modal"></button>
           </div>
         </div>
       </div>
+      <!-- ENDS -->
 
       <div class="instructions">
         <div class="ins title is-4">Steps</div>
@@ -98,68 +117,175 @@ export default {
   data() {
     return {
       dishInfo: {},
-      finished: false,
-      substituteModal: false
+      finishedRecipe: false,
+      substituteModal: -1,
+      substituteIngredients: [],
+      userChosen: [],
+      failed: false,
+      backgroundDark: false,
+      tempChosen: JSON.parse(JSON.stringify(this.chosen))
     };
   },
-  async mounted() {
-    let self = this;
-    let url = "http://127.0.0.1:8000/recipes/?";
-    let selected = JSON.parse(JSON.stringify(this.chosen));
-
-    for (let ingredient of selected) {
-      ingredient = ingredient.split(" ").join("");
-      url += `q=${ingredient}&`;
-    }
-    url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
-    axios
-      .get(url)
-      .then(function(response) {
+  methods: {
+    async getIngredients() {
+      let url_ingredients = `http://127.0.0.1:8000/all_ingredients/${this.selectedDish}`;
+      this.userChosen = JSON.parse(JSON.stringify(this.tempChosen));
+      try {
+        const response = await axios.get(url_ingredients);
         let count = 0;
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
-          console.log(dish);
-          if (self.selectedDish === dish["name"]) {
-            self.dishInfo = {
-              name: data[count]["name"],
-              mandatory: data[count]["mandatoryIngredients"],
-              time: data[count]["estimatedPreparationTime"],
-              image: data[count]["image"]["url"],
-              servingName: data[count]["serving"]["name"],
-              servingAmount: data[count]["serving"]["amount"],
-              measurements: data[count]["ratio"]["volumes"],
-              instructions: data[count]["blueprint"]["instructions"]
+          if (this.selectedDish === dish["name"]) {
+            this.substituteIngredients = {
+              ingredient: data[count]["suggestedIngredients"]
             };
-            console.log(self.dishInfo);
+            let temp = JSON.parse(JSON.stringify(this.substituteIngredients));
+            let newChosen = [];
+            for (let ingredient of temp["ingredient"]) {
+              newChosen.push(ingredient["name"]);
+            }
+            // removing duplicates
+            let newChosenSet = new Set([
+              ...JSON.parse(JSON.stringify(this.tempChosen)),
+              ...newChosen
+            ]);
+            newChosen = [...newChosenSet];
+            this.tempChosen = newChosen;
+            this.getRecipe();
+            break;
           }
           count += 1;
         }
+      } catch (err) {
+        this.failed = true;
+        console.log(err);
+      }
+    },
+    getRecipe() {
+      let self = this;
+      let url = `http://127.0.0.1:8000/recipes/?dish=${this.selectedDish}&`;
+      let temp = this.substituteIngredients["ingredient"];
 
-        self.finished = true;
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+      // suggested ingredients
+      for (let ingredient of temp) {
+        url += `id=${parseInt(ingredient["id"])}&`;
+      }
+      // user chosen ingredients
+      console.log(this.userChosen);
+      for (let ingredient of this.userChosen) {
+        url += `u=${ingredient}&`;
+      }
+
+      url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
+      console.log(url);
+      axios
+        .get(url)
+        .then(function(response) {
+          let count = 0;
+          let data = response.data["data"]["dishes"];
+          for (let dish of data) {
+            console.log(dish);
+            if (self.selectedDish === dish["name"]) {
+              self.dishInfo = {
+                name: data[count]["name"],
+                mandatory: data[count]["mandatoryIngredients"],
+                time: data[count]["estimatedPreparationTime"],
+                image: data[count]["image"]["url"],
+                servingName: data[count]["serving"]["name"],
+                servingAmount: data[count]["serving"]["amount"],
+                measurements: data[count]["ratio"]["volumes"],
+                instructions: data[count]["blueprint"]["instructions"]
+              };
+              console.log(self.dishInfo);
+              break;
+            }
+            count += 1;
+          }
+
+          self.finishedRecipe = true;
+        })
+        .catch(function(error) {
+          this.failed = true;
+          console.log(error);
+        });
+    },
+    changeBackground(index) {
+      this.substituteModal = index;
+      this.backgroundDark = true;
+    },
+    undoBackground() {
+      this.substituteModal = -1;
+      this.backgroundDark = false;
+    },
+    removeIngredient(remove) {
+      // removes the measurements
+      console.log(remove);
+      console.log(this.dishInfo["measurements"]);
+      this.dishInfo["measurements"] = this.dishInfo["measurements"].filter(
+        ingredient => ingredient["ingredient"]["name"] !== remove
+      );
+      console.log(this.dishInfo["measurements"]);
+      // removes the ingredient that we wanted to remove substitutes'
+      this.substituteIngredients["ingredient"] = this.substituteIngredients[
+        "ingredient"
+      ].filter(ingredient => ingredient["name"] !== remove);
+      this.undoBackground();
+    },
+    substituteThis(chosenIngredient, substitute) {
+      // replaces substitutes in the list of original ingredients to be displayed
+      this.tempChosen = this.tempChosen.map(chose =>
+        chose === chosenIngredient ? substitute : chose
+      );
+      this.dishInfo["measurements"] = this.dishInfo["measurements"].map(
+        chose => {
+          if (chose["ingredient"]["name"] === chosenIngredient) {
+            chose["ingredient"]["name"] = substitute;
+          }
+          return chose;
+        }
+      );
+
+      let tempSubstitutes = JSON.parse(
+        JSON.stringify(this.substituteIngredients["ingredient"])
+      ); // so we can work with this.substituteIngredients, otherwise we get an undefined error
+      console.log(tempSubstitutes);
+
+      // gets the original ingredient into the list of substitutes now
+      this.substituteIngredients["ingredient"] = tempSubstitutes.map(
+        ingredient => {
+          if (ingredient["name"] === chosenIngredient) {
+            let temp = ingredient["name"];
+            ingredient["name"] = substitute;
+            ingredient["substitutes"] = ingredient["substitutes"].map(item =>
+              item["name"] === substitute ? { name: temp } : item
+            );
+            console.log(JSON.stringify(ingredient["substitutes"]));
+          }
+          return ingredient;
+        }
+      );
+      this.undoBackground();
+    }
+  },
+  async mounted() {
+    return this.getIngredients();
   },
   computed: {
     allIngredients: function() {
-      let newChosen = JSON.parse(JSON.stringify(this.chosen)).sort(
-        (a, b) => (a > b) - (a < b)
-      ); // we're sorting since we get volumes from the api alphabetically and since we
-      // merge that with the ingredients we selected, the measurements and ingredients wouldn't
-      // be in sync
-      let newDishInfo = this.dishInfo.mandatory.map(
-        mandatory => mandatory["name"]
+      let temp = JSON.parse(JSON.stringify(this.dishInfo));
+      let tempSubstitutes = JSON.parse(
+        JSON.stringify(this.substituteIngredients)
       );
-      let mergedIngredients = [...newChosen, ...newDishInfo];
-      let ingredientsSet = new Set(mergedIngredients); // for duplicate ingredients
+      for (let substitutes of tempSubstitutes["ingredient"]) {
+        for (let [index, dish] of temp["measurements"].entries()) {
+          if (substitutes["name"] === dish["ingredient"]["name"]) {
+            temp["measurements"][index]["substitutes"] = substitutes;
+          }
+        }
+      }
+      console.log(temp);
 
-      let ingredientsName = Array.from(ingredientsSet);
-      let finalIngredients = ingredientsName.map((ingredient, i) => ({
-        name: ingredient,
-        measurement: this.dishInfo["measurements"][i]
-      }));
-      return finalIngredients;
+      return temp;
     }
   }
 };
@@ -172,15 +298,11 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.banner {
-  position: absolute;
-  width: 70%;
-  height: 2%;
-  left: 4%;
-  top: 50%;
-  z-index: auto;
-  background: #e2f7cb;
+.dark-background {
+  background: rgba(94, 97, 93, 0.3);
+  /* opacity: 0.6; */
 }
+
 .icon-wrapper {
   margin-top: 0.8rem;
   margin-left: 2rem;
@@ -211,6 +333,16 @@ export default {
 .ingredients {
   width: 80%;
   margin: 0 auto;
+}
+.substitute-button {
+  background: inherit;
+  color: #2d5d4c;
+}
+.substitute-button:hover {
+  background: grey;
+}
+.substitute-button:focus {
+  background: green;
 }
 .required-wrapper {
   display: flex;
@@ -278,7 +410,13 @@ export default {
   width: 80%;
   margin: 0 auto;
 }
-
+.remove {
+  background: #459071;
+  color: white;
+  font-family: Bebas Neue;
+  text-align: center;
+  font-size: 1.5rem;
+}
 .instructions-list {
   list-style-type: none;
   width: 95%;
@@ -301,24 +439,35 @@ export default {
   width: 100%;
   max-height: 20rem;
 }
+.header-modal {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+.substitute-text {
+  margin-top: 5%;
+  text-align: center;
+  font-size: 1rem;
+  /* Color 1 */
+  font-weight: 600;
+  color: #2d5d4c;
+}
+.substitute-button-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+.delete-wrapper {
+  margin-top: 0.5rem;
+}
+
 .substitute-modal {
-  height: 10%;
-  bottom: auto;
-  width: 50%;
-  top: 50%;
-  left: 25%;
-  right: 25%;
-  background: white;
-  z-index: 20;
-}
-.modal-background {
-  background-color: white;
-}
-.modal-card {
-  height: 100%;
-}
-.delete-modal {
-  left: 40%;
-  top: -70%;
+  background: #f9f9f9;
+  border: 1px solid #95ce8c;
+  box-sizing: border-box;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 2;
+  margin-left: 10%;
 }
 </style>

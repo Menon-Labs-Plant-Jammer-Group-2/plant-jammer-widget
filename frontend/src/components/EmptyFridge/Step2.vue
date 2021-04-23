@@ -114,7 +114,8 @@ export default {
       searchQuery: "",
       finished: false,
       selectedClicked: false,
-      showDescription: -1
+      showDescription: -1,
+      url: ""
     };
   },
   methods: {
@@ -134,16 +135,16 @@ export default {
     /* Here we just get the generated recipes of the ingredients that we had 
     from step 1  */
     let self = this;
-    let url = "http://127.0.0.1:8000/recipes/?";
+    this.url = "http://127.0.0.1:8000/recipes/?";
     let selected = JSON.parse(JSON.stringify(this.chosen));
 
     for (let ingredient of selected) {
       ingredient = ingredient.split(" ").join("");
-      url += `q=${ingredient}&`;
+      this.url += `q=${ingredient}&`;
     }
-    url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
+    this.url = this.url.slice(0, this.url.length - 1); // to remove the extra & since that would mess with our backend
     axios
-      .get(url)
+      .get(this.url)
       .then(function(response) {
         let tempObj = [];
         let data = response.data["data"]["dishes"];
