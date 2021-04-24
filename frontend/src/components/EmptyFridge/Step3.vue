@@ -7,7 +7,7 @@
     >Sorry we have a bug :( or the requested recipe made us time out</div>
     <div v-else>
       <div class="img-wrapper">
-        <img class="img" :src="dishInfo['image']" alt="placeholder" />
+        <img class="img" :src="image" alt="placeholder" />
       </div>
 
       <div class="header">
@@ -115,7 +115,8 @@ export default {
   props: {
     chosen: Array,
     step: Number,
-    selectedDish: String
+    selectedDish: String,
+    image: String
   },
   data() {
     return {
@@ -154,7 +155,7 @@ export default {
             ]);
             newChosen = [...newChosenSet];
             this.tempChosen = newChosen;
-            this.getRecipe();
+            await this.getRecipe();
             break;
           }
           count += 1;
@@ -164,8 +165,7 @@ export default {
         console.log(err);
       }
     },
-    getRecipe() {
-      let self = this;
+    async getRecipe() {
       let url = `http://127.0.0.1:8000/recipe/?dish=${this.selectedDish}&`;
       let temp = this.substituteIngredients["ingredient"];
 
@@ -181,36 +181,33 @@ export default {
 
       url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
       console.log(url);
-      axios
-        .get(url)
-        .then(function(response) {
-          let count = 0;
-          let data = response.data["data"]["dishes"];
-          for (let dish of data) {
-            console.log(dish);
-            if (self.selectedDish === dish["name"]) {
-              self.dishInfo = {
-                name: data[count]["name"],
-                mandatory: data[count]["mandatoryIngredients"],
-                time: data[count]["estimatedPreparationTime"],
-                image: data[count]["image"]["url"],
-                servingName: data[count]["serving"]["name"],
-                servingAmount: data[count]["serving"]["amount"],
-                measurements: data[count]["ratio"]["volumes"],
-                instructions: data[count]["blueprint"]["instructions"]
-              };
-              console.log(self.dishInfo);
-              break;
-            }
-            count += 1;
+      try {
+        const response = await axios.get(url);
+        let count = 0;
+        let data = response.data["data"]["dishes"];
+        for (let dish of data) {
+          console.log(dish);
+          if (this.selectedDish === dish["name"]) {
+            this.dishInfo = {
+              name: data[count]["name"],
+              mandatory: data[count]["mandatoryIngredients"],
+              time: data[count]["estimatedPreparationTime"],
+              servingName: data[count]["serving"]["name"],
+              servingAmount: data[count]["serving"]["amount"],
+              measurements: data[count]["ratio"]["volumes"],
+              instructions: data[count]["blueprint"]["instructions"]
+            };
+            console.log(this.dishInfo);
+            break;
           }
+          count += 1;
+        }
 
-          self.finishedRecipe = true;
-        })
-        .catch(function(error) {
-          this.failed = true;
-          console.log(error);
-        });
+        this.finishedRecipe = true;
+      } catch (error) {
+        this.failed = true;
+        console.log(error);
+      }
     },
     changeBackground(name) {
       this.substituteModal = name;

@@ -26,13 +26,12 @@
 - Frontend
   - Portions, if current implementation is fast we will add this later on
   - Tests
-  - Fix functions in async created, stop using promises
   - Add crosses for choose ingredients
   - **Change volumes and recipe if ingredient has been substituted**
 
 # Potential features
 
-- Download
+- Download, I think we need an actual url for this, puppeteer
 - Portions
 - Substitutable ingredient changes recipe
 
@@ -41,18 +40,16 @@
 - Frontend
 
   - Implement filter functionality, after Davis completes it
-  - cache step 3 result from step2
+  - cache step 2
 
 - Backend
 
-  - download ( Generate pdf through pdfkit)
-  - cache the images given to you and pass them as a prop to step 3 from step 2
   - Add testing to backend
 
 - Infra-relatedish
-  - Change docker images for frontend and backend
   - Somehow get this out there, either do some magic with Trafeik and Docker Swarm or consider Dokku for backend
   - Otherwise docker-compose
+  - Remember to chage ports when you use docker-compose, frontend needs to go to port 80 and not 8000
 
 # Advice
 

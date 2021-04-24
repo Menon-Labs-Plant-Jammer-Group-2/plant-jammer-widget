@@ -48,7 +48,6 @@ export default {
       let newChosen = this.chosen.filter(item => item != ingredient);
       console.log(newChosen);
       this.$emit("update:chosen", newChosen);
-      let self = this;
       if (newChosen.length >= 1) {
         let url = "http://127.0.0.1:8000/recipe/?";
         let selected = JSON.parse(JSON.stringify(newChosen));
@@ -58,27 +57,25 @@ export default {
           url += `keywords=${ingredient}&`;
         }
         url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
-        axios
-          .get(url)
-          .then(function(response) {
-            let data = response.data["data"]["dishes"];
-            let newSearchData = [];
-            for (let dish of data) {
-              let properties = {
-                properties: {
-                  name: dish["name"],
-                  time: dish["estimatedPreparationTime"],
-                  image: dish["image"]["url"]
-                }
-              };
-              newSearchData.push(properties);
-            }
-            console.log(newSearchData);
-            self.$emit("update:searchData", newSearchData);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+        try {
+          const response = axios.get(url);
+          let data = response.data["data"]["dishes"];
+          let newSearchData = [];
+          for (let dish of data) {
+            let properties = {
+              properties: {
+                name: dish["name"],
+                time: dish["estimatedPreparationTime"],
+                image: dish["image"]["url"]
+              }
+            };
+            newSearchData.push(properties);
+          }
+          console.log(newSearchData);
+          this.$emit("update:searchData", newSearchData);
+        } catch (error) {
+          console.log(error);
+        }
       } else {
         let noMore = [];
         this.$emit("update:searchData", noMore);

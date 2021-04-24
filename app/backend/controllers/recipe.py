@@ -62,9 +62,6 @@ def get_recipe_ids(dish: str, q_id: List[int], chosen: List[str]):
       mandatoryIngredients{
         name
       }
-      image{
-          url
-      }
       serving {
         name
         amount
