@@ -26,7 +26,7 @@
 - Frontend
   - Portions, if current implementation is fast we will add this later on
   - Tests
-  - Fix functions in async mounted, stop using promises
+  - Fix functions in async created, stop using promises
   - Add crosses for choose ingredients
   - **Change volumes and recipe if ingredient has been substituted**
 
@@ -50,7 +50,7 @@
   - Add testing to backend
 
 - Infra-relatedish
-
+  - Change docker images for frontend and backend
   - Somehow get this out there, either do some magic with Trafeik and Docker Swarm or consider Dokku for backend
   - Otherwise docker-compose
 
@@ -63,3 +63,5 @@
 - Cleaned up backend, something I should've done at the start
 
 - Always use `created` hook for API calls instead of `mounted` since `created` happens before `mounted` and `mounted` happens when the DOM is rendered which doesn't matter for API calls.
+
+- Avoid `position:absolute` if you don't have the parent component having a fixed height and width

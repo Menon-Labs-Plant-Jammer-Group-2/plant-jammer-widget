@@ -6,7 +6,6 @@ from ..controllers import ids
 
 def get_recipe(keywords: List[str]):
     list_ids = [int(i[0]) for i in ids.get_ids(keywords)["response"]]
-    print(list_ids)
     keywords = " ".join(keywords)
     query_template = Template(
         """query getRecipe {

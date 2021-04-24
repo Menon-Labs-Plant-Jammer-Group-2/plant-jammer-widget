@@ -5,7 +5,6 @@ from typing import List
 def get_ids(ingredients: List[str]):
     final_ids = []
     for ing in ingredients:
-        print(ing)
         id = ingredient.get_ingredient(
             ing)["data"]["ingredients"][0]["id"]
         name = ingredient.get_ingredient(
