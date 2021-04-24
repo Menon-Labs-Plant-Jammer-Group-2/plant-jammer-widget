@@ -81,12 +81,12 @@ export default {
       }
     }
   },
-  async mounted() {
+  async created() {
     // for populating our search data so that we can search and get the list of available options
     // while typing
     let self = this;
     axios
-      .get(`http://127.0.0.1:8000/ingredients/`)
+      .get(`http://127.0.0.1:8000/ingredient/`)
       .then(function(response) {
         let data = response.data["data"]["ingredients"];
         for (let ingredient of data) {

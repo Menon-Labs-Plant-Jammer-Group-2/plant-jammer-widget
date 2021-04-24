@@ -131,16 +131,16 @@ export default {
       });
     }
   },
-  async mounted() {
+  async created() {
     /* Here we just get the generated recipes of the ingredients that we had 
     from step 1  */
     let self = this;
-    this.url = "http://127.0.0.1:8000/recipes/?";
+    this.url = "http://127.0.0.1:8000/recipe/?";
     let selected = JSON.parse(JSON.stringify(this.chosen));
 
     for (let ingredient of selected) {
       ingredient = ingredient.split(" ").join("");
-      this.url += `q=${ingredient}&`;
+      this.url += `keywords=${ingredient}&`;
     }
     this.url = this.url.slice(0, this.url.length - 1); // to remove the extra & since that would mess with our backend
     axios

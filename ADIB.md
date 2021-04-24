@@ -27,6 +27,7 @@
   - Portions, if current implementation is fast we will add this later on
   - Tests
   - Fix functions in async mounted, stop using promises
+  - Add crosses for choose ingredients
   - **Change volumes and recipe if ingredient has been substituted**
 
 # Potential features
@@ -40,13 +41,13 @@
 - Frontend
 
   - Implement filter functionality, after Davis completes it
+  - cache step 3 result from step2
 
 - Backend
 
   - download ( Generate pdf through pdfkit)
   - cache the images given to you and pass them as a prop to step 3 from step 2
   - Add testing to backend
-  - Make the backend directory structure cleaner
 
 - Infra-relatedish
 
@@ -58,3 +59,7 @@
 ![](res/2021-04-22-10-53-53.png)
 
 - ~~share, delaying this since we don't have a valid url, use [vue-social-sharing](!https://github.com/nicolasbeauvais/vue-social-sharing)~~, edit: we can't do this since we don't generate a link and Vue.js is mostly a client-side framework. Should've used Nuxt.js if we were to do this
+
+- Cleaned up backend, something I should've done at the start
+
+- Always use `created` hook for API calls instead of `mounted` since `created` happens before `mounted` and `mounted` happens when the DOM is rendered which doesn't matter for API calls.

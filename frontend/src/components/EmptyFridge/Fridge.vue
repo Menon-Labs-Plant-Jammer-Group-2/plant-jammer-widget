@@ -50,12 +50,12 @@ export default {
       this.$emit("update:chosen", newChosen);
       let self = this;
       if (newChosen.length >= 1) {
-        let url = "http://127.0.0.1:8000/recipes/?";
+        let url = "http://127.0.0.1:8000/recipe/?";
         let selected = JSON.parse(JSON.stringify(newChosen));
 
         for (let ingredient of selected) {
           ingredient = ingredient.split(" ").join("");
-          url += `q=${ingredient}&`;
+          url += `keywords=${ingredient}&`;
         }
         url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
         axios

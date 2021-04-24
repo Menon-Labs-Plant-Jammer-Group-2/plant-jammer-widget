@@ -46,12 +46,15 @@
           >{{ingredient['grams']!==undefined ? `${ingredient['grams']}g`:''}} {{ingredient['ingredient']['name']}}</li>
           <button
             v-if="ingredient['substitutes'] && ingredient['substitutes']['substitutes'].length>0"
-            @click="changeBackground(index)"
+            @click="changeBackground(ingredient['ingredient']['name'])"
             class="substitute button is-white is-small"
           >Substitute</button>
 
           <!-- MODAL FOR SUBSTITUTES -->
-          <div v-if="substituteModal ===index" class="box is-active substitute-modal">
+          <div
+            v-if="substituteModal ===ingredient['ingredient']['name']"
+            class="box is-active substitute-modal"
+          >
             <div>
               <div class="header-modal">
                 <div>
@@ -59,7 +62,7 @@
                   <div class="substitute-button-wrapper">
                     <button
                       class="button substitute-button is-white"
-                      v-for="substitute in ingredient['substitutes']['substitutes'].splice(0,3)"
+                      v-for="substitute in ingredient['substitutes']['substitutes'].slice(0,3)"
                       :key="substitute['name']"
                       @click="substituteThis(ingredient['ingredient']['name'],substitute['name'])"
                     >{{substitute['name']}}</button>
@@ -118,7 +121,7 @@ export default {
     return {
       dishInfo: {},
       finishedRecipe: false,
-      substituteModal: -1,
+      substituteModal: "",
       substituteIngredients: [],
       userChosen: [],
       failed: false,
@@ -133,7 +136,7 @@ export default {
       try {
         const response = await axios.get(url_ingredients);
         let count = 0;
-        let data = response.data["data"]["dishes"];
+        let data = response.data["data"]["dishes"]; // if dishes is null that means there's an error object, most common culprit is that request timed out
         for (let dish of data) {
           if (this.selectedDish === dish["name"]) {
             this.substituteIngredients = {
@@ -163,7 +166,7 @@ export default {
     },
     getRecipe() {
       let self = this;
-      let url = `http://127.0.0.1:8000/recipes/?dish=${this.selectedDish}&`;
+      let url = `http://127.0.0.1:8000/recipe/?dish=${this.selectedDish}&`;
       let temp = this.substituteIngredients["ingredient"];
 
       // suggested ingredients
@@ -173,7 +176,7 @@ export default {
       // user chosen ingredients
       console.log(this.userChosen);
       for (let ingredient of this.userChosen) {
-        url += `u=${ingredient}&`;
+        url += `chosen=${ingredient}&`;
       }
 
       url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
@@ -209,12 +212,12 @@ export default {
           console.log(error);
         });
     },
-    changeBackground(index) {
-      this.substituteModal = index;
+    changeBackground(name) {
+      this.substituteModal = name;
       this.backgroundDark = true;
     },
     undoBackground() {
-      this.substituteModal = -1;
+      this.substituteModal = "";
       this.backgroundDark = false;
     },
     removeIngredient(remove) {
@@ -267,10 +270,13 @@ export default {
       this.undoBackground();
     }
   },
-  async mounted() {
+  async created() {
     return this.getIngredients();
   },
   computed: {
+    // for this computed property we combine the subsitutes with the info of the dishes into one object
+    // which we use to render the data in the template tag, also makes sure that measurements and
+    // substitutes are in sync with the name of the ingredient
     allIngredients: function() {
       let temp = JSON.parse(JSON.stringify(this.dishInfo));
       let tempSubstitutes = JSON.parse(
