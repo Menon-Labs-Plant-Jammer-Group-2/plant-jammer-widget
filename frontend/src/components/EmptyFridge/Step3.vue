@@ -109,6 +109,7 @@
 
 <script>
 import axios from "axios";
+import NProgress from "nprogress";
 export default {
   name: "Step3",
   components: {},
@@ -268,7 +269,9 @@ export default {
     }
   },
   async created() {
-    return this.getIngredients();
+    NProgress.start();
+    this.getIngredients();
+    NProgress.done();
   },
   computed: {
     // for this computed property we combine the subsitutes with the info of the dishes into one object

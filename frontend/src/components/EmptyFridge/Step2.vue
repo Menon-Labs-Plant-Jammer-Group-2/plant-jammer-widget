@@ -95,6 +95,7 @@
 
 <script>
 import axios from "axios";
+import NProgress from "nprogress";
 export default {
   name: "Step2",
   components: {},
@@ -171,7 +172,9 @@ export default {
   async created() {
     /* Here we just get the generated recipes of the ingredients that we had 
     from step 1  */
-    return this.populateSearchField();
+    NProgress.start();
+    this.populateSearchField();
+    NProgress.done();
   },
   computed: {
     filteredDishes: function() {

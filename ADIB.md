@@ -13,8 +13,6 @@
 
 - Frontend
 
-  - Will the user go back to step 1 to change their selection?
-  - How do I add what the user selected already?
   - For some of the recipes it times out cause it's too big
   - When we remove an ingredient the recipe doesn't update
 
@@ -26,7 +24,6 @@
 - Frontend
   - Portions, if current implementation is fast we will add this later on
   - Tests
-  - Add crosses for choose ingredients
   - **Change volumes and recipe if ingredient has been substituted**
 
 # Potential features
@@ -37,19 +34,23 @@
 
 # To do
 
+- start figuring out hosting
+
 - Frontend
 
   - Implement filter functionality, after Davis completes it
-  - cache step 2
 
 - Backend
 
   - Add testing to backend
+  - cache step 2
 
 - Infra-relatedish
+  - push new docker images
   - Somehow get this out there, either do some magic with Trafeik and Docker Swarm or consider Dokku for backend
   - Otherwise docker-compose
   - Remember to chage ports when you use docker-compose, frontend needs to go to port 80 and not 8000
+  - Build a new docker image [everytime](!https://docs.github.com/en/actions/guides/publishing-docker-images) frontend or backend changes?
 
 # Advice
 
