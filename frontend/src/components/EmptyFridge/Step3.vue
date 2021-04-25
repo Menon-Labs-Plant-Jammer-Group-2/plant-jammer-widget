@@ -7,7 +7,7 @@
     >Sorry we have a bug :( or the requested recipe made us time out</div>
     <div v-else>
       <div class="img-wrapper">
-        <img class="img" :src="dishInfo['image']" alt="placeholder" />
+        <img class="img" :src="image" alt="placeholder" />
       </div>
 
       <div class="header">
@@ -46,12 +46,15 @@
           >{{ingredient['grams']!==undefined ? `${ingredient['grams']}g`:''}} {{ingredient['ingredient']['name']}}</li>
           <button
             v-if="ingredient['substitutes'] && ingredient['substitutes']['substitutes'].length>0"
-            @click="changeBackground(index)"
+            @click="changeBackground(ingredient['ingredient']['name'])"
             class="substitute button is-white is-small"
           >Substitute</button>
 
           <!-- MODAL FOR SUBSTITUTES -->
-          <div v-if="substituteModal ===index" class="box is-active substitute-modal">
+          <div
+            v-if="substituteModal ===ingredient['ingredient']['name']"
+            class="box is-active substitute-modal"
+          >
             <div>
               <div class="header-modal">
                 <div>
@@ -59,7 +62,7 @@
                   <div class="substitute-button-wrapper">
                     <button
                       class="button substitute-button is-white"
-                      v-for="substitute in ingredient['substitutes']['substitutes'].splice(0,3)"
+                      v-for="substitute in ingredient['substitutes']['substitutes'].slice(0,3)"
                       :key="substitute['name']"
                       @click="substituteThis(ingredient['ingredient']['name'],substitute['name'])"
                     >{{substitute['name']}}</button>
@@ -106,19 +109,21 @@
 
 <script>
 import axios from "axios";
+import NProgress from "nprogress";
 export default {
   name: "Step3",
   components: {},
   props: {
     chosen: Array,
     step: Number,
-    selectedDish: String
+    selectedDish: String,
+    image: String
   },
   data() {
     return {
       dishInfo: {},
       finishedRecipe: false,
-      substituteModal: -1,
+      substituteModal: "",
       substituteIngredients: [],
       userChosen: [],
       failed: false,
@@ -133,7 +138,7 @@ export default {
       try {
         const response = await axios.get(url_ingredients);
         let count = 0;
-        let data = response.data["data"]["dishes"];
+        let data = response.data["data"]["dishes"]; // if dishes is null that means there's an error object, most common culprit is that request timed out
         for (let dish of data) {
           if (this.selectedDish === dish["name"]) {
             this.substituteIngredients = {
@@ -151,7 +156,7 @@ export default {
             ]);
             newChosen = [...newChosenSet];
             this.tempChosen = newChosen;
-            this.getRecipe();
+            await this.getRecipe();
             break;
           }
           count += 1;
@@ -161,9 +166,8 @@ export default {
         console.log(err);
       }
     },
-    getRecipe() {
-      let self = this;
-      let url = `http://127.0.0.1:8000/recipes/?dish=${this.selectedDish}&`;
+    async getRecipe() {
+      let url = `http://127.0.0.1:8000/recipe/?dish=${this.selectedDish}&`;
       let temp = this.substituteIngredients["ingredient"];
 
       // suggested ingredients
@@ -173,48 +177,45 @@ export default {
       // user chosen ingredients
       console.log(this.userChosen);
       for (let ingredient of this.userChosen) {
-        url += `u=${ingredient}&`;
+        url += `chosen=${ingredient}&`;
       }
 
       url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
       console.log(url);
-      axios
-        .get(url)
-        .then(function(response) {
-          let count = 0;
-          let data = response.data["data"]["dishes"];
-          for (let dish of data) {
-            console.log(dish);
-            if (self.selectedDish === dish["name"]) {
-              self.dishInfo = {
-                name: data[count]["name"],
-                mandatory: data[count]["mandatoryIngredients"],
-                time: data[count]["estimatedPreparationTime"],
-                image: data[count]["image"]["url"],
-                servingName: data[count]["serving"]["name"],
-                servingAmount: data[count]["serving"]["amount"],
-                measurements: data[count]["ratio"]["volumes"],
-                instructions: data[count]["blueprint"]["instructions"]
-              };
-              console.log(self.dishInfo);
-              break;
-            }
-            count += 1;
+      try {
+        const response = await axios.get(url);
+        let count = 0;
+        let data = response.data["data"]["dishes"];
+        for (let dish of data) {
+          console.log(dish);
+          if (this.selectedDish === dish["name"]) {
+            this.dishInfo = {
+              name: data[count]["name"],
+              mandatory: data[count]["mandatoryIngredients"],
+              time: data[count]["estimatedPreparationTime"],
+              servingName: data[count]["serving"]["name"],
+              servingAmount: data[count]["serving"]["amount"],
+              measurements: data[count]["ratio"]["volumes"],
+              instructions: data[count]["blueprint"]["instructions"]
+            };
+            console.log(this.dishInfo);
+            break;
           }
+          count += 1;
+        }
 
-          self.finishedRecipe = true;
-        })
-        .catch(function(error) {
-          this.failed = true;
-          console.log(error);
-        });
+        this.finishedRecipe = true;
+      } catch (error) {
+        this.failed = true;
+        console.log(error);
+      }
     },
-    changeBackground(index) {
-      this.substituteModal = index;
+    changeBackground(name) {
+      this.substituteModal = name;
       this.backgroundDark = true;
     },
     undoBackground() {
-      this.substituteModal = -1;
+      this.substituteModal = "";
       this.backgroundDark = false;
     },
     removeIngredient(remove) {
@@ -267,10 +268,15 @@ export default {
       this.undoBackground();
     }
   },
-  async mounted() {
-    return this.getIngredients();
+  async created() {
+    NProgress.start();
+    this.getIngredients();
+    NProgress.done();
   },
   computed: {
+    // for this computed property we combine the subsitutes with the info of the dishes into one object
+    // which we use to render the data in the template tag, also makes sure that measurements and
+    // substitutes are in sync with the name of the ingredient
     allIngredients: function() {
       let temp = JSON.parse(JSON.stringify(this.dishInfo));
       let tempSubstitutes = JSON.parse(

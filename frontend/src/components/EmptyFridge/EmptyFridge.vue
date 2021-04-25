@@ -46,12 +46,14 @@
       :timeClicked.sync="timeClicked"
       :selectedDish.sync="selectedDish"
       :suggestedNames.sync="suggestedNames"
+      :image.sync="image"
       v-if="step===1"
     />
     <step3
       :selectedDish.sync="selectedDish"
       :chosen.sync="chosen"
       :step.sync="step"
+      :image.sync="image"
       v-if="step===2"
     />
   </div>
@@ -87,7 +89,8 @@ export default {
       timeClicked: false,
       selectedDish: "",
       suggestedNames: new Set(),
-      holder: []
+      holder: [],
+      image: ""
     };
   },
   methods: {}

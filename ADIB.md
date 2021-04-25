@@ -13,8 +13,6 @@
 
 - Frontend
 
-  - Will the user go back to step 1 to change their selection?
-  - How do I add what the user selected already?
   - For some of the recipes it times out cause it's too big
   - When we remove an ingredient the recipe doesn't update
 
@@ -26,16 +24,17 @@
 - Frontend
   - Portions, if current implementation is fast we will add this later on
   - Tests
-  - Fix functions in async mounted, stop using promises
   - **Change volumes and recipe if ingredient has been substituted**
 
 # Potential features
 
-- Download
+- Download, I think we need an actual url for this, puppeteer
 - Portions
 - Substitutable ingredient changes recipe
 
 # To do
+
+- start figuring out hosting
 
 - Frontend
 
@@ -43,18 +42,24 @@
 
 - Backend
 
-  - download ( Generate pdf through pdfkit)
-  - cache the images given to you and pass them as a prop to step 3 from step 2
   - Add testing to backend
-  - Make the backend directory structure cleaner
+  - cache step 2
 
 - Infra-relatedish
-
+  - push new docker images
   - Somehow get this out there, either do some magic with Trafeik and Docker Swarm or consider Dokku for backend
   - Otherwise docker-compose
+  - Remember to chage ports when you use docker-compose, frontend needs to go to port 80 and not 8000
+  - Build a new docker image [everytime](!https://docs.github.com/en/actions/guides/publishing-docker-images) frontend or backend changes?
 
 # Advice
 
 ![](res/2021-04-22-10-53-53.png)
 
 - ~~share, delaying this since we don't have a valid url, use [vue-social-sharing](!https://github.com/nicolasbeauvais/vue-social-sharing)~~, edit: we can't do this since we don't generate a link and Vue.js is mostly a client-side framework. Should've used Nuxt.js if we were to do this
+
+- Cleaned up backend, something I should've done at the start
+
+- Always use `created` hook for API calls instead of `mounted` since `created` happens before `mounted` and `mounted` happens when the DOM is rendered which doesn't matter for API calls.
+
+- Avoid `position:absolute` if you don't have the parent component having a fixed height and width

@@ -1,9 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
-import VueSocialSharing from "vue-social-sharing";
-
+import "nprogress/nprogress.css";
 Vue.config.productionTip = false;
-Vue.use(VueSocialSharing);
 
 new Vue({
   render: (h) => h(App),

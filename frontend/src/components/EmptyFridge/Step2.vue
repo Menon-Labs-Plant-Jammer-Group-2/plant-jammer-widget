@@ -95,6 +95,7 @@
 
 <script>
 import axios from "axios";
+import NProgress from "nprogress";
 export default {
   name: "Step2",
   components: {},
@@ -107,19 +108,20 @@ export default {
     timeClicked: Boolean,
     filteredTimes: Array,
     selectedDish: String,
-    suggestedNames: Set
+    suggestedNames: Set,
+    image: String
   },
   data() {
     return {
       searchQuery: "",
       finished: false,
       selectedClicked: false,
-      showDescription: -1,
-      url: ""
+      showDescription: -1
     };
   },
   methods: {
     selected: function(dish) {
+      this.$emit("update:image", dish["properties"]["image"]);
       this.$emit("update:selectedDish", dish["properties"]["name"]);
       this.selectedClicked = true;
     },
@@ -129,23 +131,18 @@ export default {
         temp = temp["properties"]["name"];
         return temp.toLowerCase().indexOf(this.searchQuery.toLowerCase()) >= 0;
       });
-    }
-  },
-  async mounted() {
-    /* Here we just get the generated recipes of the ingredients that we had 
-    from step 1  */
-    let self = this;
-    this.url = "http://127.0.0.1:8000/recipes/?";
-    let selected = JSON.parse(JSON.stringify(this.chosen));
+    },
+    async populateSearchField() {
+      let url = "http://127.0.0.1:8000/recipe/?";
+      let selected = JSON.parse(JSON.stringify(this.chosen));
 
-    for (let ingredient of selected) {
-      ingredient = ingredient.split(" ").join("");
-      this.url += `q=${ingredient}&`;
-    }
-    this.url = this.url.slice(0, this.url.length - 1); // to remove the extra & since that would mess with our backend
-    axios
-      .get(this.url)
-      .then(function(response) {
+      for (let ingredient of selected) {
+        ingredient = ingredient.split(" ").join("");
+        url += `keywords=${ingredient}&`;
+      }
+      url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
+      try {
+        const response = await axios.get(url);
         let tempObj = [];
         let data = response.data["data"]["dishes"];
         for (let dish of data) {
@@ -160,17 +157,24 @@ export default {
               description: dish["description"]
             }
           };
-          if (!self.suggestedNames.has(dish["name"])) {
+          if (!this.suggestedNames.has(dish["name"])) {
             tempObj.push(properties);
-            self.suggestedNames.add(dish["name"]);
+            this.suggestedNames.add(dish["name"]);
           }
         }
-        if (tempObj.length !== 0) self.$emit("update:searchData", tempObj);
-        self.finished = true;
-      })
-      .catch(function(error) {
+        if (tempObj.length !== 0) this.$emit("update:searchData", tempObj);
+        this.finished = true;
+      } catch (error) {
         console.log(error);
-      });
+      }
+    }
+  },
+  async created() {
+    /* Here we just get the generated recipes of the ingredients that we had 
+    from step 1  */
+    NProgress.start();
+    this.populateSearchField();
+    NProgress.done();
   },
   computed: {
     filteredDishes: function() {

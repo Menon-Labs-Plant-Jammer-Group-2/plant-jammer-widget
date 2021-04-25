@@ -6,12 +6,15 @@
     <div class="field">
       <p v-if="chosen.length>=1" class="title is-4">The ingredients you've selected</p>
       <div class="holder">
-        <p class="item" v-for="chose in holder" :key="chose['name']">
+        <div class="item" v-for="chose in holder" :key="chose['name']">
           <span class="icon">
             <img class="icon-ingredient" :src="chose['icon']" />
           </span>
-          {{chose["name"]}}
-        </p>
+          <p>{{chose["name"]}}</p>
+          <div class="delete-wrapper">
+            <button @click="removeIngredient(chose)" class="delete"></button>
+          </div>
+        </div>
       </div>
       <div class="input-wrapper">
         <p class="control has-icons-right">
@@ -79,27 +82,32 @@ export default {
         this.holder.push(ingredient);
         this.chosen.push(ingredient["name"]);
       }
-    }
-  },
-  async mounted() {
-    // for populating our search data so that we can search and get the list of available options
-    // while typing
-    let self = this;
-    axios
-      .get(`http://127.0.0.1:8000/ingredients/`)
-      .then(function(response) {
+    },
+    async populateSearchField() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/ingredient/`);
         let data = response.data["data"]["ingredients"];
         for (let ingredient of data) {
-          self.searchData.push({
+          this.searchData.push({
             name: ingredient["name"],
             icon: ingredient["icon"]["url"] ?? ""
           });
         }
-        console.log(self.searchData);
-      })
-      .catch(function(error) {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    },
+    removeIngredient(choice) {
+      this.holder = this.holder.filter(ingredient => ingredient !== choice);
+      this.chosen = this.chosen.filter(
+        ingredient => ingredient["name"] !== choice
+      );
+    }
+  },
+  async created() {
+    // for populating our search data so that we can search and get the list of available options
+    // while typing
+    return this.populateSearchField();
   },
   computed: {
     // just pattern matches with whatever the user is typing in the input box, filters results
@@ -182,8 +190,17 @@ input {
   border: none;
   color: #2d5d4c;
 }
+.holder {
+  margin: 0.5rem auto 0 auto;
+}
 .item {
   text-align: center;
+  display: flex;
+  margin-left: 40%;
+  margin-bottom: 0.5rem;
+}
+.delete-wrapper {
+  margin-left: 1rem;
 }
 .next-wrapper {
   margin-top: 1rem;
