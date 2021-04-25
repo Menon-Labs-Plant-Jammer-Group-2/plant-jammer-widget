@@ -3,10 +3,15 @@
     <div class="exit-wrapper">
       <button @click="$emit('update:fridgeClicked',false)" class="delete exit"></button>
     </div>
-    <p class="filter-title title is-3">Your fridge</p>
+    <p class="fridge-title title is-3">Your fridge</p>
     <div v-if="!noIngredients">
-      <div class="input-wrapper">
-        <input class="input is-rounded" v-model="searchQuery" type="text" placeholder="Search" />
+      <div class="input-wrapper has-icons-right">
+        <input
+          class="input fridge-input is-rounded"
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search"
+        />
       </div>
       <div class="holder">
         <div class="item" v-for="chose in filteredData" :key="chose">
@@ -43,37 +48,35 @@ export default {
       let newChosen = this.chosen.filter(item => item != ingredient);
       console.log(newChosen);
       this.$emit("update:chosen", newChosen);
-      let self = this;
       if (newChosen.length >= 1) {
-        let url = "http://155.138.211.205/recipes/?";
+        let url = "https://menon-labs-api.xyz/recipe/?";
         let selected = JSON.parse(JSON.stringify(newChosen));
 
         for (let ingredient of selected) {
           ingredient = ingredient.split(" ").join("");
-          url += `q=${ingredient}&`;
+          url += `keywords=${ingredient}&`;
         }
         url = url.slice(0, url.length - 1); // to remove the extra & since that would mess with our backend
-        axios
-          .get(url)
-          .then(function(response) {
-            let data = response.data["data"]["dishes"];
-            let newSearchData = [];
-            for (let dish of data) {
-              let properties = {
-                properties: {
-                  name: dish["name"],
-                  time: dish["estimatedPreparationTime"],
-                  image: dish["image"]["url"]
-                }
-              };
-              newSearchData.push(properties);
-            }
-            console.log(newSearchData);
-            self.$emit("update:searchData", newSearchData);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+
+        try {
+          const response = axios.get(url);
+          let data = response.data["data"]["dishes"];
+          let newSearchData = [];
+          for (let dish of data) {
+            let properties = {
+              properties: {
+                name: dish["name"],
+                time: dish["estimatedPreparationTime"],
+                image: dish["image"]["url"]
+              }
+            };
+            newSearchData.push(properties);
+          }
+          console.log(newSearchData);
+          this.$emit("update:searchData", newSearchData);
+        } catch (error) {
+          console.log(error);
+        }
       } else {
         let noMore = [];
         this.$emit("update:searchData", noMore);
@@ -103,22 +106,37 @@ export default {
 
 .fridge-box {
   position: absolute;
-  z-index: 10;
-  margin: 0 0 0 50%;
-  height: 100%;
+  z-index: 40;
+  margin: 10% 0 0 50% !important;
+  height: 70%;
+  background: #459071;
+}
+.fridge-title {
+  color: white;
+  font-weight: 10;
+  margin-bottom: 2rem !important;
+  padding-top: 0 !important;
 }
 .input-wrapper {
   width: 80%;
   margin: 0 auto 2rem auto;
+  display: flex;
 }
 .item {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.item {
   text-align: center;
+  color: white;
 }
+.fridge-input {
+  background: inherit;
+  color: white;
+}
+::placeholder {
+  color: white;
+}
+
 .delete-wrapper {
   margin: 0.3rem 0 0 0.2rem;
 }

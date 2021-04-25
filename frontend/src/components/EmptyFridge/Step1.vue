@@ -1,9 +1,21 @@
 <template>
   <div>
-    <p class="sub title is-4">Select at least 1 ingredient</p>
-    <p class="sub title is-6">Select ingredients you'd like to cook with</p>
-    <p class="sub title is-6">with to create a recipe</p>
+    <p class="sub1 title is-4">SELECT AT LEAST 1 INGREDIENT</p>
+    <p class="sub2 title is-6">Select ingredients you'd like to cook with</p>
+    <p class="sub2 title is-6">with to create a recipe</p>
     <div class="field">
+      <p v-if="chosen.length>=1" class="title is-4">The ingredients you've selected</p>
+      <div class="holder">
+        <div class="item" v-for="chose in holder" :key="chose['name']">
+          <span class="icon">
+            <img class="icon-ingredient" :src="chose['icon']" />
+          </span>
+          <p>{{chose["name"]}}</p>
+          <div class="delete-wrapper">
+            <button @click="removeIngredient(chose)" class="delete"></button>
+          </div>
+        </div>
+      </div>
       <div class="input-wrapper">
         <p class="control has-icons-right">
           <input
@@ -25,14 +37,16 @@
       @mouseleave="searchFocus = false"
       v-if="inputFocus || searchFocus"
     >
-      <div class="parent" v-for="ingredient in filteredIngredients" :key="ingredient">
-        <button class="result button is-white" @click="addIngredients(ingredient)">{{ingredient}}</button>
+      <div class="parent" v-for="ingredient in filteredIngredients" :key="ingredient['name']">
+        <button class="result button is-white" @click="addIngredients(ingredient)">
+          <span class="icon">
+            <img class="icon-ingredient" :src="ingredient['icon']" />
+          </span>
+          <span>{{ingredient['name']}}</span>
+        </button>
       </div>
     </div>
-    <p v-if="chosen.length>=1" class="title is-4">The ingredients you've selected</p>
-    <div class="holder">
-      <p class="item" v-for="chose in chosen" :key="chose">{{chose}}</p>
-    </div>
+
     <div v-if="chosen.length >= 1" class="next-wrapper">
       <button @click="$emit('update:step',1)" class="next button is-success">
         <span class="icon is-small">
@@ -51,7 +65,8 @@ export default {
   components: {},
   props: {
     step: Number,
-    chosen: Array
+    chosen: Array,
+    holder: Array
   },
   data() {
     return {
@@ -63,27 +78,38 @@ export default {
   },
   methods: {
     addIngredients(ingredient) {
-      if (!this.chosen.includes(ingredient)) {
-        this.chosen.push(ingredient);
+      if (!this.chosen.includes(ingredient["name"])) {
+        this.holder.push(ingredient);
+        this.chosen.push(ingredient["name"]);
       }
-    }
-  },
-  async mounted() {
-    // for populating our search data so that we can search and get the list of available options
-    // while typing
-    let self = this;
-    axios
-      .get(`http://155.138.211.205/ingredients/`)
-      .then(function(response) {
+    },
+    async populateSearchField() {
+      try {
+        const response = await axios.get(
+          `https://menon-labs-api.xyz/ingredient/`
+        );
         let data = response.data["data"]["ingredients"];
         for (let ingredient of data) {
-          self.searchData.push(ingredient["name"]);
+          this.searchData.push({
+            name: ingredient["name"],
+            icon: ingredient["icon"]["url"] ?? ""
+          });
         }
-        console.log(self.searchData);
-      })
-      .catch(function(error) {
+      } catch (error) {
         console.log(error);
-      });
+      }
+    },
+    removeIngredient(choice) {
+      this.holder = this.holder.filter(ingredient => ingredient !== choice);
+      this.chosen = this.chosen.filter(
+        ingredient => ingredient["name"] !== choice
+      );
+    }
+  },
+  async created() {
+    // for populating our search data so that we can search and get the list of available options
+    // while typing
+    return this.populateSearchField();
   },
   computed: {
     // just pattern matches with whatever the user is typing in the input box, filters results
@@ -92,7 +118,9 @@ export default {
       var self = this;
       let filteredData = this.searchData.filter(function(ingredient) {
         return (
-          ingredient.toLowerCase().indexOf(self.searchQuery.toLowerCase()) >= 0
+          ingredient["name"]
+            .toLowerCase()
+            .indexOf(self.searchQuery.toLowerCase()) >= 0
         );
       });
       return filteredData.slice(0, 6);
@@ -114,13 +142,45 @@ export default {
 input {
   color: #2d5d4c;
   border: 1px solid #e2f7cb;
+  position: static;
 }
 ::placeholder {
-  color: #2d5d4c;
+  color: #a1c09c;
 }
-.sub {
+.icon-ingredient {
+  fill: #2d5d4c;
+}
+.sub1 {
+  font-size: 2rem;
+  /* identical to box height */
   padding: 0;
   margin: 0;
+  /* Color 2 */
+  font-family: "Bebas Neue";
+  font-style: normal;
+  font-weight: 400;
+  color: #459071;
+}
+@media screen and (min-width: 769px),
+  print .steps:not(.is-vertical) .has-content-centered .steps-segment:not(:last-child) :after {
+  left: 50%;
+  right: -50%;
+  margin: 0 !important;
+}
+.icon-ingredient {
+  color: #2d5d4c !important;
+}
+.steps:not(.is-hollow) .steps-marker:not(.is-hollow) {
+  background-color: #459071 !important;
+  color: #fff;
+}
+.sub2 {
+  padding: 0;
+  margin: 0;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1rem;
+  color: #459071;
 }
 .parent {
   display: flex;
@@ -130,9 +190,19 @@ input {
   justify-content: left;
   width: 80%;
   border: none;
+  color: #2d5d4c;
+}
+.holder {
+  margin: 0.5rem auto 0 auto;
 }
 .item {
   text-align: center;
+  display: flex;
+  margin-left: 40%;
+  margin-bottom: 0.5rem;
+}
+.delete-wrapper {
+  margin-left: 1rem;
 }
 .next-wrapper {
   margin-top: 1rem;

@@ -16,9 +16,10 @@
       :filteredTimes.sync="filteredTimes"
     />
     <div class="header">
-      <div class="title">Empty Your Fridge</div>
+      <div class="empty title">Empty Your Fridge</div>
+      <div class="highlight"></div>
       <!-- make this responsive -->
-      <button class="button is-white back" @click="$emit('update:state',0)">&lt; Back to home</button>
+      <button class="button back" @click="$emit('update:state',0)">&lt; BACK</button>
     </div>
     <div class="steps-wrapper">
       <ul class="steps has-content-above has-content-centered">
@@ -29,12 +30,12 @@
         >
           <a href="#" class="steps-marker"></a>
           <div class="steps-content">
-            <p class="is-size-6">{{dot}}</p>
+            <p class="step is-size-6">{{dot}}</p>
           </div>
         </li>
       </ul>
     </div>
-    <step1 :chosen="chosen" :step.sync="step" v-if="step===0" />
+    <step1 :chosen="chosen" :step.sync="step" :holder.sync="holder" v-if="step===0" />
     <step2
       :fridgeClicked.sync="fridgeClicked"
       :filterClicked.sync="filterClicked"
@@ -45,9 +46,16 @@
       :timeClicked.sync="timeClicked"
       :selectedDish.sync="selectedDish"
       :suggestedNames.sync="suggestedNames"
+      :image.sync="image"
       v-if="step===1"
     />
-    <step3 :selectedDish.sync="selectedDish" :chosen="chosen" :step.sync="step" v-if="step===2" />
+    <step3
+      :selectedDish.sync="selectedDish"
+      :chosen.sync="chosen"
+      :step.sync="step"
+      :image.sync="image"
+      v-if="step===2"
+    />
   </div>
 </template>
 
@@ -80,9 +88,12 @@ export default {
       filteredTimes: [],
       timeClicked: false,
       selectedDish: "",
-      suggestedNames: new Set()
+      suggestedNames: new Set(),
+      holder: [],
+      image: ""
     };
-  }
+  },
+  methods: {}
 };
 </script>
 
@@ -90,10 +101,39 @@ export default {
 .header {
   position: relative;
 }
+.empty {
+  position: relative;
+  font-family: Bebas Neue;
+  font-style: normal;
+  font-weight: normal;
+  left: 15%;
+  font-size: 3rem;
+  z-index: 10;
+  letter-spacing: 0.08em;
+  color: #2d5d4c;
+}
+.highlight {
+  position: absolute;
+  width: 55%;
+  height: 40%;
+  left: 22%;
+  top: 70%;
+  z-index: auto;
+  background: #e2f7cb;
+}
+.button {
+  background-color: inherit; /* Green */
+  outline: none;
+  box-shadow: none;
+  color: white;
+}
 .back {
   position: absolute;
-  top: 2rem;
+  top: -130%;
+  font-size: 1.5rem;
   margin-left: 1rem;
+  font-family: Bebas Neue;
+  border: none;
 }
 .input-wrapper {
   margin-top: 2rem;
@@ -105,11 +145,36 @@ export default {
 }
 .steps-wrapper {
   text-align: center;
+  margin-top: 1.5rem;
   margin-bottom: 2rem;
 }
 .steps {
   margin: 0 auto;
   width: 80%;
+}
+.steps:not(.is-hollow) .steps-segment.is-active .steps-marker:not(.is-hollow) {
+  /* color: #fff; */
+  background: #b5e4ad;
+  transform: scale(0.6);
+}
+.steps:not(.is-hollow)
+  .steps-segment.is-active
+  ~ .steps-segment
+  .steps-marker:not(.is-hollow) {
+  border: 2px solid #b5e4ad;
+  background: #f9f9f9;
+  transform: scale(0.6);
+}
+li.steps-segment::after {
+  margin: 0;
+  background: #e2f7cb;
+}
+.step {
+  color: #2d5d4c;
+}
+li.steps-segment.is-active::after {
+  margin: 0;
+  background: #e2f7cb;
 }
 .sub {
   padding: 0;
