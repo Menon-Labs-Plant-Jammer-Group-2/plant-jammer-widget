@@ -138,8 +138,12 @@ export default {
       try {
         const response = await axios.get(url_ingredients);
         let count = 0;
+        console.log(response.data);
         let data = response.data["data"]["dishes"]; // if dishes is null that means there's an error object, most common culprit is that request timed out
+        console.log(data);
         for (let dish of data) {
+          console.log(this.selectedDish);
+          console.log(dish["name"]);
           if (this.selectedDish === dish["name"]) {
             this.substituteIngredients = {
               ingredient: data[count]["suggestedIngredients"]

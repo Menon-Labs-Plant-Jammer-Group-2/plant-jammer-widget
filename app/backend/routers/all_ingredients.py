@@ -13,4 +13,5 @@ def get_all_ingredients_route(dish: str):
     Get all the ingredients for a dish
     '''
     data = all_ingredients.get_all_ingredients(dish)
+    print(data)
     return data
