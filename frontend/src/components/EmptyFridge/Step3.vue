@@ -134,8 +134,10 @@ export default {
   },
   methods: {
     async getIngredients() {
-      let url_ingredients = `https://menon-labs-api.xyz/all_ingredients/${this.selectedDish}`;
-      console.log(this.selectedDish);
+      this.tempSelected = this.selectedDish;
+      this.selectedDish = this.selectedDish.split(" ")[0];
+      let url_ingredients = `https://menon-labs-api.xyz/all_ingredients/${this.tempSelected}`;
+      console.log(this.tempSelected);
       this.userChosen = JSON.parse(JSON.stringify(this.tempChosen));
       try {
         const response = await axios.get(url_ingredients);
@@ -174,7 +176,7 @@ export default {
       }
     },
     async getRecipe() {
-      let url = `https://menon-labs-api.xyz/recipe/?dish=${this.selectedDish}&`;
+      let url = `https://menon-labs-api.xyz/recipe/?dish=${this.tempSelected}&`;
       let temp = this.substituteIngredients["ingredient"];
 
       // suggested ingredients
