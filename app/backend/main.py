@@ -9,10 +9,12 @@ app = FastAPI()
 
 
 origins = [
-    "http://localhost.tiangolo.com",
+   "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:8080",
+    "https://plant-jammer-widget-frontend.vercel.app",
+    "*" 
 ]
 
 app.add_middleware(

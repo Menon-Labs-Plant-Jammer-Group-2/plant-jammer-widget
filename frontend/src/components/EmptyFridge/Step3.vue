@@ -133,7 +133,7 @@ export default {
   },
   methods: {
     async getIngredients() {
-      let url_ingredients = `https://menon-labs-api.xyz/all_ingredients/${this.selectedDish}.xyz`;
+      let url_ingredients = `https://menon-labs-api.xyz/all_ingredients/${this.selectedDish}`;
       this.userChosen = JSON.parse(JSON.stringify(this.tempChosen));
       try {
         const response = await axios.get(url_ingredients);
