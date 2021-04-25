@@ -25,6 +25,7 @@
   - Portions, if current implementation is fast we will add this later on
   - Tests
   - **Change volumes and recipe if ingredient has been substituted**
+  - I think the reason why we are getting the step 3 lagginess is because string matching is expensive, try removing the everything after the first space
 
 # Potential features
 
@@ -34,11 +35,9 @@
 
 # To do
 
-- start figuring out hosting
-
 - Frontend
 
-  - Implement filter functionality, after Davis completes it
+  - Implement filter functionality
 
 - Backend
 

@@ -128,12 +128,16 @@ export default {
       userChosen: [],
       failed: false,
       backgroundDark: false,
-      tempChosen: JSON.parse(JSON.stringify(this.chosen))
+      tempChosen: JSON.parse(JSON.stringify(this.chosen)),
+      tempSelected: ""
     };
   },
   methods: {
     async getIngredients() {
-      let url_ingredients = `http://127.0.0.1:8000/all_ingredients/${this.selectedDish}`;
+      this.tempSelected = this.selectedDish;
+      this.tempSelected = this.tempSelected.split(" ")[0];
+      console.log(this.tempSelected);
+      let url_ingredients = `http://127.0.0.1:8000/all_ingredients/${this.tempSelected}`;
       this.userChosen = JSON.parse(JSON.stringify(this.tempChosen));
       try {
         const response = await axios.get(url_ingredients);
@@ -167,11 +171,12 @@ export default {
         }
       } catch (err) {
         this.failed = true;
+        NProgress.done();
         console.log(err);
       }
     },
     async getRecipe() {
-      let url = `http://127.0.0.1:8000/recipe/?dish=${this.selectedDish}&`;
+      let url = `http://127.0.0.1:8000/recipe/?dish=${this.tempSelected}&`;
       let temp = this.substituteIngredients["ingredient"];
 
       // suggested ingredients
@@ -209,8 +214,10 @@ export default {
         }
 
         this.finishedRecipe = true;
+        NProgress.done();
       } catch (error) {
         this.failed = true;
+        NProgress.done();
         console.log(error);
       }
     },
@@ -275,7 +282,6 @@ export default {
   async created() {
     NProgress.start();
     this.getIngredients();
-    NProgress.done();
   },
   computed: {
     // for this computed property we combine the subsitutes with the info of the dishes into one object
