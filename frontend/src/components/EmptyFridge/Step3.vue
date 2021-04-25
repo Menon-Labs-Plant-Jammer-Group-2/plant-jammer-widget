@@ -135,7 +135,7 @@ export default {
   methods: {
     async getIngredients() {
       this.tempSelected = this.selectedDish;
-      this.selectedDish = this.selectedDish.split(" ")[0];
+      this.tempSelected = this.tempSelected.split(" ")[0];
       let url_ingredients = `https://menon-labs-api.xyz/all_ingredients/${this.tempSelected}`;
       console.log(this.tempSelected);
       this.userChosen = JSON.parse(JSON.stringify(this.tempChosen));
