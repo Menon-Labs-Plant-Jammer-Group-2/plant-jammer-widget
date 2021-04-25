@@ -63,3 +63,5 @@
 - Always use `created` hook for API calls instead of `mounted` since `created` happens before `mounted` and `mounted` happens when the DOM is rendered which doesn't matter for API calls.
 
 - Avoid `position:absolute` if you don't have the parent component having a fixed height and width
+
+- Secured backend with HTTPS 😎, this helped me a [lot](!https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
