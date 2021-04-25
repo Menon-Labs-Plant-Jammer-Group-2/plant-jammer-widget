@@ -128,7 +128,8 @@ export default {
       userChosen: [],
       failed: false,
       backgroundDark: false,
-      tempChosen: JSON.parse(JSON.stringify(this.chosen))
+      tempChosen: JSON.parse(JSON.stringify(this.chosen)),
+      tempSelected: ""
     };
   },
   methods: {
@@ -139,9 +140,12 @@ export default {
       try {
         const response = await axios.get(url_ingredients);
         let count = 0;
+        console.log(response.data);
         let data = response.data["data"]["dishes"]; // if dishes is null that means there's an error object, most common culprit is that request timed out
         console.log(data);
         for (let dish of data) {
+          console.log(this.selectedDish);
+          console.log(dish["name"]);
           if (this.selectedDish === dish["name"]) {
             this.substituteIngredients = {
               ingredient: data[count]["suggestedIngredients"]
@@ -165,6 +169,7 @@ export default {
         }
       } catch (err) {
         this.failed = true;
+        NProgress.done();
         console.log(err);
       }
     },
@@ -207,8 +212,10 @@ export default {
         }
 
         this.finishedRecipe = true;
+        NProgress.done();
       } catch (error) {
         this.failed = true;
+        NProgress.done();
         console.log(error);
       }
     },
@@ -273,7 +280,6 @@ export default {
   async created() {
     NProgress.start();
     this.getIngredients();
-    NProgress.done();
   },
   computed: {
     // for this computed property we combine the subsitutes with the info of the dishes into one object

@@ -165,6 +165,7 @@ export default {
         }
         if (tempObj.length !== 0) this.$emit("update:searchData", tempObj);
         this.finished = true;
+        NProgress.done();
       } catch (error) {
         console.log(error);
       }
@@ -175,7 +176,6 @@ export default {
     from step 1  */
     NProgress.start();
     this.populateSearchField();
-    NProgress.done();
   },
   computed: {
     filteredDishes: function() {

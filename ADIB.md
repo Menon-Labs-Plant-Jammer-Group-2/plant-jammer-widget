@@ -25,6 +25,7 @@
   - Portions, if current implementation is fast we will add this later on
   - Tests
   - **Change volumes and recipe if ingredient has been substituted**
+  - I think the reason why we are getting the step 3 lagginess is because string matching is expensive, try removing the everything after the first space
 
 # Potential features
 
@@ -34,11 +35,9 @@
 
 # To do
 
-- start figuring out hosting
-
 - Frontend
 
-  - Implement filter functionality, after Davis completes it
+  - Implement filter functionality
 
 - Backend
 
@@ -63,3 +62,5 @@
 - Always use `created` hook for API calls instead of `mounted` since `created` happens before `mounted` and `mounted` happens when the DOM is rendered which doesn't matter for API calls.
 
 - Avoid `position:absolute` if you don't have the parent component having a fixed height and width
+
+- Secured backend with HTTPS 😎, this helped me a [lot](!https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
