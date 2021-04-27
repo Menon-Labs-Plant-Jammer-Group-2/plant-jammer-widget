@@ -12,9 +12,6 @@
 
       <div class="header">
         <div class="recipe-title title is-2">{{dishInfo['name']}}</div>
-        <div class="icon-wrapper">
-          <i class="fas fa-download"></i>
-        </div>
       </div>
       <div class="metadata-recipe">
         <div class="time-wrapper">
@@ -317,12 +314,6 @@ export default {
 .dark-background {
   background: rgba(94, 97, 93, 0.3);
   /* opacity: 0.6; */
-}
-
-.icon-wrapper {
-  margin-top: 0.8rem;
-  margin-left: 2rem;
-  font-size: 1.5rem;
 }
 .metadata-recipe {
   display: flex;

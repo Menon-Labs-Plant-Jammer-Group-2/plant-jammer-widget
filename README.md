@@ -31,6 +31,8 @@ uvicorn main:app --reload # run the server
 
 To use the API key, you must run `export=API_KEY # replace the actual API key with API_KEY` and make sure that a `.env` file exists in the `backend` folder so that the backend code will be able to access the environment variable from the operating system
 
+Also thanks to the awesomeness of FastAPI, if you go to `localhost:(whatever port number you specified, default is 80)\docs`. You can see all the available endpoints plus query parameters and variables. Very easy to play around with it and will help you gain a better understanding of what's going on!
+
 ## Considerations
 
 - Create a better folder structure
@@ -38,5 +40,6 @@ To use the API key, you must run `export=API_KEY # replace the actual API key wi
 
 ## Technologies used
 
-- Vue.js for frontend
-- FastAPI for backend
+- Vue.js for frontend, Bulman for CSS framework, Vercel for frontend deployment
+- FastAPI for backend deployed using Uvicorn (should've used Gunicorn) being run behind a CDN (Cloudflare) for protection against DDOS attacks
+- Deployed using Docker on a DigitalOcean server and we have our API url from Namecheap

@@ -14,42 +14,39 @@
 - Frontend
 
   - For some of the recipes it times out cause it's too big
-  - When we remove an ingredient the recipe doesn't update
+  - Substitutes are not replaced in recipe
+  - Cuisine type filter not supported because it relies on description, and we would get no results most of the time
+  - Weird bug where if you delete your ingredients in step 2, it's not synced in step 1
 
 - Backend
   - Why can I not set a pagination limit on the number of substitutes
 
 # If possible
 
-- Frontend
-  - Portions, if current implementation is fast we will add this later on
-  - Tests
-  - **Change volumes and recipe if ingredient has been substituted**
-  - I think the reason why we are getting the step 3 lagginess is because string matching is expensive, try removing the everything after the first space
-
 # Potential features
 
-- Download, I think we need an actual url for this, puppeteer
 - Portions
-- Substitutable ingredient changes recipe
 
 # To do
+
+- Detect if time, cuisine, and diet was clicked
+- Based on what was clicked determine what filters should be applied on the final array
+- final array ? anyFilterClicked : final array
+
+Download
+Diet filter functionality
+Portions -- backend + frontend - input type number html
 
 - Frontend
 
   - Implement filter functionality
-
-- Backend
-
-  - Add testing to backend
-  - cache step 2
 
 - Infra-relatedish
   - push new docker images
   - Somehow get this out there, either do some magic with Trafeik and Docker Swarm or consider Dokku for backend
   - Otherwise docker-compose
   - Remember to chage ports when you use docker-compose, frontend needs to go to port 80 and not 8000
-  - Build a new docker image [everytime](!https://docs.github.com/en/actions/guides/publishing-docker-images) frontend or backend changes?
+  - Build a new docker image [everytime](!https://docs.github.com/en/actions/guides/publishing-docker-images) backend changes?
 
 # Advice
 
@@ -64,3 +61,7 @@
 - Avoid `position:absolute` if you don't have the parent component having a fixed height and width
 
 - Secured backend with HTTPS 😎, this helped me a [lot](!https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
+
+- Never going to use npm as a package manager and virutal env for package management in python. From now on all my projects will be done in yarn and poetry respectively.
+
+- I should've used Vuex and Typescript to begin with, Vuex would've helped me easily and safely manage state. Typescript would've saved me from wasted hours of debugging an undefined value which was the result of a property not existing :(
