@@ -43,6 +43,7 @@
       :step.sync="step"
       :searchData.sync="searchData"
       :filteredTimes.sync="filteredTimes"
+      :filteredDiets.sync="filteredDiets"
       :timeClicked.sync="timeClicked"
       :selectedDish.sync="selectedDish"
       :suggestedNames.sync="suggestedNames"
@@ -54,6 +55,8 @@
       :chosen.sync="chosen"
       :step.sync="step"
       :image.sync="image"
+      :shoppingCart.sync="shoppingCart"
+      @shoppingCart="$emit(shoppingCart)"
       v-if="step===2"
     />
   </div>
@@ -75,7 +78,8 @@ export default {
     FilterRecipe
   },
   props: {
-    state: Number
+    state: Number,
+    shoppingCart: Array
   },
   data() {
     return {
@@ -86,6 +90,7 @@ export default {
       filterClicked: false,
       searchData: [],
       filteredTimes: [],
+      filteredDiets: [],
       timeClicked: false,
       selectedDish: "",
       suggestedNames: new Set(),

@@ -88,6 +88,7 @@ export default {
     filterClicked: Boolean,
     searchData: Array,
     filteredTimes: Array,
+    filteredDiets: Array,
     timeClicked: Boolean
   },
   data() {
@@ -125,6 +126,13 @@ export default {
       );
       this.$emit("update:timeClicked", true);
       this.$emit("update:filteredTimes", newTimes);
+    },
+    filterDiet() {
+      let newDiets = this.dietaryPreferencesFilter.map(
+        diet => diet.selected === true
+      );
+      this.$emit("update:timeClicked", true);
+      this.$emit("update:filteredDiets", newDiets);
     },
     reset(options) {
       for (let option of options) {

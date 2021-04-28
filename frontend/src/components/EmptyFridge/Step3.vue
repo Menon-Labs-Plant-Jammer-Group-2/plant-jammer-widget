@@ -13,6 +13,7 @@
       <div class="header">
         <div class="recipe-title title is-2">{{dishInfo['name']}}</div>
       </div>
+
       <div class="metadata-recipe">
         <div class="time-wrapper">
           <div class="time title is-4">Time</div>
@@ -41,12 +42,17 @@
           <li
             class="ingredients-list"
           >{{ingredient['grams']!==undefined ? `${ingredient['grams']}g`:''}} {{ingredient['ingredient']['name']}}</li>
-          <button
-            v-if="ingredient['substitutes'] && ingredient['substitutes']['substitutes'].length>0"
-            @click="changeBackground(ingredient['ingredient']['name'])"
-            class="substitute button is-white is-small"
-          >Substitute</button>
-
+          <div class="buttons-wrapper">
+            <button
+              v-if="ingredient['substitutes'] && ingredient['substitutes']['substitutes'].length>0"
+              @click="changeBackground(ingredient['ingredient']['name'])"
+              class="substitute button is-white is-small"
+            >Substitute</button>
+            <button
+              @click="addShoppingList(ingredient['ingredient']['name'],ingredient['grams'])"
+              class="button is-white is-small"
+            >+</button>
+          </div>
           <!-- MODAL FOR SUBSTITUTES -->
           <div
             v-if="substituteModal ===ingredient['ingredient']['name']"
@@ -114,7 +120,8 @@ export default {
     chosen: Array,
     step: Number,
     selectedDish: String,
-    image: String
+    image: String,
+    shoppingCart: Array
   },
   data() {
     return {
@@ -274,6 +281,10 @@ export default {
         }
       );
       this.undoBackground();
+    },
+    addShoppingList(name, grams) {
+      this.shoppingCart.push({ name: name, amount: grams });
+      this.$emit("update:shoppingCart", this.shoppingCart);
     }
   },
   async created() {
@@ -363,6 +374,9 @@ export default {
   font-weight: normal;
   letter-spacing: 0.08em;
   color: #67b093;
+}
+.buttons-wrapper {
+  display: flex;
 }
 .mandatory-list {
   list-style-type: none;
@@ -458,6 +472,11 @@ export default {
   /* Color 1 */
   font-weight: 600;
   color: #2d5d4c;
+}
+.icon-wrapper {
+  margin-top: 0.8rem;
+  margin-left: 2rem;
+  font-size: 1.5rem;
 }
 .substitute-button-wrapper {
   display: flex;

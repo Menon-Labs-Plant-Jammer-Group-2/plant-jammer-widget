@@ -57,7 +57,7 @@
                   Required
                   <div
                     v-if="dish['properties']['required']"
-                  >{{dish['properties']['required'].join(", ")}}</div>
+                  >{{dish['properties']['required'].join(", ").length>0? dish['properties']['required'].join(", "): "None"}}</div>
                 </div>
               </div>
             </div>
@@ -249,6 +249,7 @@ input {
   font-family: Bebas Neue;
   color: white;
   font-size: 2rem;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 .dish-image {
   border-top-left-radius: 10px;
