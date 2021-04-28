@@ -22,7 +22,8 @@
 
       <home v-if="state===0" :state.sync="state" />
       <gallery v-if="state===0" :stsate.sync="state" />
-      <empty-fridge v-if="state===1" :state.sync="state" />
+      <empty-fridge v-if="state===1" :state.sync="state" :shoppingCart.sync="shoppingCart" />
+      <shopping-list v-if="state===3" :state.sync="state" :shoppingCart.sync="shoppingCart" />
     </div>
   </div>
 </template>
@@ -31,13 +32,15 @@
 import Home from "./components/Home/Home.vue";
 import Gallery from "./components/Home/Gallery.vue";
 import EmptyFridge from "./components/EmptyFridge/EmptyFridge.vue";
+import ShoppingList from "./components/ShoppingList.vue";
 export default {
   name: "App",
-  components: { Home, Gallery, EmptyFridge },
+  components: { Home, Gallery, EmptyFridge, ShoppingList },
 
   data() {
     return {
-      state: 0 // 0 for home, 1 for empty your fridge, 2 for search dishes
+      state: 0, // 0 for home, 1 for empty your fridge, 2 for search dishes
+      shoppingCart: []
     };
   },
   methods: {}

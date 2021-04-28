@@ -16,6 +16,7 @@
   - For some of the recipes it times out cause it's too big
   - Substitutes are not replaced in recipe
   - Cuisine type filter not supported because it relies on description, and we would get no results most of the time
+  - Also diet and cuisine type filter haven't been implemented yet
   - Weird bug where if you delete your ingredients in step 2, it's not synced in step 1
 
 - Backend
@@ -25,21 +26,10 @@
 
 # Potential features
 
-- Portions
-
 # To do
 
-- Detect if time, cuisine, and diet was clicked
-- Based on what was clicked determine what filters should be applied on the final array
-- final array ? anyFilterClicked : final array
-
-Download
-Diet filter functionality
-Portions -- backend + frontend - input type number html
-
-- Frontend
-
-  - Implement filter functionality
+Shopping list
+Make the rest of the user journey
 
 - Infra-relatedish
   - push new docker images
