@@ -18,6 +18,7 @@
   - Cuisine type filter not supported because it relies on description, and we would get no results most of the time
   - Also diet and cuisine type filter haven't been implemented yet
   - Weird bug where if you delete your ingredients in step 2, it's not synced in step 1
+  - Choose your dishes hasn't been implemented yet
 
 - Backend
   - Why can I not set a pagination limit on the number of substitutes
@@ -27,9 +28,6 @@
 # Potential features
 
 # To do
-
-Shopping list
-Make the rest of the user journey
 
 - Infra-relatedish
   - push new docker images
